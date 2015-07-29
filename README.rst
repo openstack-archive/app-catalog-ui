@@ -16,6 +16,7 @@ How to try this package
 =======================
 
 ::
+
   git clone http://github.com/openstack/horizon.git
   git clone http://github.com/kfox1111/apps-catalog-ui.git
   cd horizon
