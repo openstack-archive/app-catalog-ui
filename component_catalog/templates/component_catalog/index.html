@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Component Catalog" %}{% endblock %}
+
+{% block page_header %}
+  {% include "horizon/common/_page_header.html" with title=_("Component Catalog ") %}
+{% endblock page_header %}
+
+{% block main %}
+
+<table hz-table ng-cloak
+  class="table-striped table-rsp table-detail modern"
+  ng-controller="appComponentCatalogTableCtrl">
+
+  <thead>
+    <tr>
+      <th class="expander"></th>
+      <th class="rsp-p1">Name</th>
+      <th class="rsp-p1">License</th>
+      <th class="rsp-p1"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr ng-repeat-start="image in images track by image.name">
+      <td class="expander">
+        <i class="fa fa-chevron-right" hz-expand-detail duration="200"></i>
+      </td>
+      <td class="rsp-p1">{$ image.name $}</td>
+      <td class="rsp-p2">{$ image.license $}</td>
+      <td ng-switch="image.attributes.indirect_url || '_undefined_'">
+        <a ng-switch-default class="btn btn-default btn-sm" target="_blank" href="{$ image.attributes.indirect_url $}">Install Instructions</a>
+        <div ng-switch-when="_undefined_" ng-switch="image.installed">
+          <a ng-switch-default class="btn btn-default btn-sm disabled ajax-modal" href="/}">Checking</a>
+          <a ng-switch-when="false" class="btn btn-default btn-sm ajax-modal" href="/project/images/create/?name={$ image.name | encodeURIComponent $}&source_type=url&image_url={$ image.attributes.url | encodeURIComponent $}&disk_format={$ image.disk_format $}&architecture={$ image.architecture $}&minimum_disk={$ image.min_disk $}&minimum_ram={$ image.min_ram $}&description={$ image.description $}">Install</a>
+          <a ng-switch-when="true" class="btn btn-default btn-sm ajax-modal" href="/project/instances/launch?source_type=image_id&source_id={$ image.installed_id $}">Launch</a>
+          </a>
+        </div>
+      </td>
+    </tr>
+
+    <tr ng-repeat-end class="detail-row">
+      <td class="detail" colspan="4">
+        <dl class="dl-horizontal">
+          <dt>Name</dt>
+          <dd>{$ image.name $}</dd>
+          <dt>Description</dt>
+          <dd>{$ image.description $}</dd>
+          <dt>Company</dt>
+          <dd>{$ image.provided_by.company $}</dd>
+          <dt></dt>
+          <dd ng-switch="image.license_url || '_undefined_'">
+            <a ng-switch-default class="btn btn-default btn-sm" target="_blank" href="{$ image.license_url $}">License Details</a>
+            <div ng-switch-when="_undefined_"></div>
+          </dd>
+        </dl>
+      </td>
+    </tr>
+
+  </tbody>
+</table>
+
+{% endblock %}
+

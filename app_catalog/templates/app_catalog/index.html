@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Application Catalog" %}{% endblock %}
+
+{% block page_header %}
+  {% include "horizon/common/_page_header.html" with title=_("Application Catalog") %}
+{% endblock page_header %}
+
+{% block main %}
+
+<table hz-table ng-cloak
+  class="table-striped table-rsp table-detail modern"
+  ng-controller="appCatalogTableCtrl">
+
+  <thead>
+    <tr>
+      <th class="expander"></th>
+      <th class="rsp-p1">Name</th>
+      <th class="rsp-p1">License</th>
+      <th class="rsp-p1"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr ng-repeat-start="template in templates track by template.name">
+      <td class="expander">
+        <i class="fa fa-chevron-right" hz-expand-detail duration="200"></i>
+      </td>
+      <td class="rsp-p1">{$ template.name $}</td>
+      <td class="rsp-p2">{$ template.license $}</td>
+      <td ng-switch="template.validated">
+        <a ng-switch-default class="btn btn-default btn-sm disabled ajax-modal" href="/}">Checking</a>
+        <a ng-switch-when="error" class="btn btn-default btn-sm disabled ajax-modal" href="/">Error</a>
+        <a ng-switch-when="unsupported" class="btn btn-default btn-sm disabled ajax-modal" href="/">Unsupported</a>
+        <a ng-switch-when="true" class="btn btn-default btn-sm ajax-modal" href="/project/stacks/select_template?template_source=url&template_url={$ template.attributes.url | encodeURIComponent $}">Launch</a>
+      </td>
+    </tr>
+
+    <tr ng-repeat-end class="detail-row">
+      <td class="detail" colspan="4">
+        <dl class="dl-horizontal">
+          <dt>Name</dt>
+          <dd>{$ template.name $}</dd>
+          <dt>Description</dt>
+          <dd>{$ template.description $}</dd>
+        </dl>
+      </td>
+    </tr>
+
+  </tbody>
+</table>
+
+{% endblock %}
+
