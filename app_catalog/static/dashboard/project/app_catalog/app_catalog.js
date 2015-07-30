@@ -41,33 +41,33 @@
             headers: {'X-Requested-With': undefined}
         }
         $http(req).success(function(data) {
-            $scope.templates = data.templates;
-            for (var i in $scope.templates){
-                var process = function(template, url) {
-                    var url = template.attributes.url;
+            $scope.assets = data.assets;
+            for (var i in $scope.assets){
+                var process = function(asset, url) {
+                    var url = asset.attributes.url;
                     heatAPI.validate({'template_url': url}).success(function(data){
-                        template.validated = true;
+                        asset.validated = true;
                     }).error(function(data, status){
                         var str = 'ERROR: Could not retrieve template:'
-                        template.validated = 'unsupported';
+                        asset.validated = 'unsupported';
                         if(status == 400 && data.slice(0, str.length) == str) {
-                            template.validated = 'error'
+                            asset.validated = 'error'
                         }
                     });
                 }
-                process($scope.templates[i]);
+                process($scope.assets[i]);
             }
         });
     }
 
-    function update_found_images($scope) {
-        if('images' in $scope && 'glance_names' in $scope){
-            for (var i in $scope.images){
-                var name = $scope.images[i].name;
+    function update_found_assets($scope) {
+        if('assets' in $scope && 'glance_names' in $scope){
+            for (var i in $scope.assets){
+                var name = $scope.assets[i].name;
                 var is_installed = name in $scope.glance_names;
-                $scope.images[i].installed = is_installed;
+                $scope.assets[i].installed = is_installed;
                 if(is_installed){
-                    $scope.images[i].installed_id = $scope.glance_names[name]['id'];
+                    $scope.assets[i].installed_id = $scope.glance_names[name]['id'];
                }
             }
         }
@@ -86,11 +86,11 @@
                 glance_names[name] = {'id': data.items[i]['id']};
             }
             $scope.glance_names = glance_names;
-            update_found_images($scope)
+            update_found_assets($scope)
         });
         $http(req).success(function(data) {
-            $scope.images = data.images;
-            update_found_images($scope);
+            $scope.assets = data.assets;
+            update_found_assets($scope);
         });
     }
 

@@ -22,18 +22,18 @@
   </thead>
 
   <tbody>
-    <tr ng-repeat-start="image in images track by image.name">
+    <tr ng-repeat-start="asset in assets track by asset.name">
       <td class="expander">
         <i class="fa fa-chevron-right" hz-expand-detail duration="200"></i>
       </td>
-      <td class="rsp-p1">{$ image.name $}</td>
-      <td class="rsp-p2">{$ image.license $}</td>
-      <td ng-switch="image.attributes.indirect_url || '_undefined_'">
-        <a ng-switch-default class="btn btn-default btn-sm" target="_blank" href="{$ image.attributes.indirect_url $}">Install Instructions</a>
-        <div ng-switch-when="_undefined_" ng-switch="image.installed">
+      <td class="rsp-p1">{$ asset.name $}</td>
+      <td class="rsp-p2">{$ asset.license $}</td>
+      <td ng-switch="asset.attributes.indirect_url || '_undefined_'">
+        <a ng-switch-default class="btn btn-default btn-sm" target="_blank" href="{$ asset.attributes.indirect_url $}">Install Instructions</a>
+        <div ng-switch-when="_undefined_" ng-switch="asset.installed">
           <a ng-switch-default class="btn btn-default btn-sm disabled ajax-modal" href="/}">Checking</a>
-          <a ng-switch-when="false" class="btn btn-default btn-sm ajax-modal" href="/project/images/create/?name={$ image.name | encodeURIComponent $}&source_type=url&image_url={$ image.attributes.url | encodeURIComponent $}&disk_format={$ image.disk_format $}&architecture={$ image.architecture $}&minimum_disk={$ image.min_disk $}&minimum_ram={$ image.min_ram $}&description={$ image.description $}">Install</a>
-          <a ng-switch-when="true" class="btn btn-default btn-sm ajax-modal" href="/project/instances/launch?source_type=image_id&source_id={$ image.installed_id $}">Launch</a>
+          <a ng-switch-when="false" class="btn btn-default btn-sm ajax-modal" href="/project/images/create/?name={$ asset.name | encodeURIComponent $}&source_type=url&asset_url={$ asset.attributes.url | encodeURIComponent $}&disk_format={$ asset.disk_format $}&architecture={$ asset.architecture $}&minimum_disk={$ asset.min_disk $}&minimum_ram={$ asset.min_ram $}&description={$ asset.description $}">Install</a>
+          <a ng-switch-when="true" class="btn btn-default btn-sm ajax-modal" href="/project/instances/launch?source_type=image_id&source_id={$ asset.installed_id $}">Launch</a>
           </a>
         </div>
       </td>
@@ -43,14 +43,14 @@
       <td class="detail" colspan="4">
         <dl class="dl-horizontal">
           <dt>Name</dt>
-          <dd>{$ image.name $}</dd>
+          <dd>{$ asset.name $}</dd>
           <dt>Description</dt>
-          <dd>{$ image.description $}</dd>
+          <dd>{$ asset.description $}</dd>
           <dt>Company</dt>
-          <dd>{$ image.provided_by.company $}</dd>
+          <dd>{$ asset.provided_by.company $}</dd>
           <dt></dt>
-          <dd ng-switch="image.license_url || '_undefined_'">
-            <a ng-switch-default class="btn btn-default btn-sm" target="_blank" href="{$ image.license_url $}">License Details</a>
+          <dd ng-switch="asset.license_url || '_undefined_'">
+            <a ng-switch-default class="btn btn-default btn-sm" target="_blank" href="{$ asset.license_url $}">License Details</a>
             <div ng-switch-when="_undefined_"></div>
           </dd>
         </dl>

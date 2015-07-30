@@ -22,17 +22,17 @@
   </thead>
 
   <tbody>
-    <tr ng-repeat-start="template in templates track by template.name">
+    <tr ng-repeat-start="asset in assets track by asset.name">
       <td class="expander">
         <i class="fa fa-chevron-right" hz-expand-detail duration="200"></i>
       </td>
-      <td class="rsp-p1">{$ template.name $}</td>
-      <td class="rsp-p2">{$ template.license $}</td>
-      <td ng-switch="template.validated">
+      <td class="rsp-p1">{$ asset.name $}</td>
+      <td class="rsp-p2">{$ asset.license $}</td>
+      <td ng-switch="asset.validated">
         <a ng-switch-default class="btn btn-default btn-sm disabled ajax-modal" href="/}">Checking</a>
         <a ng-switch-when="error" class="btn btn-default btn-sm disabled ajax-modal" href="/">Error</a>
         <a ng-switch-when="unsupported" class="btn btn-default btn-sm disabled ajax-modal" href="/">Unsupported</a>
-        <a ng-switch-when="true" class="btn btn-default btn-sm ajax-modal" href="/project/stacks/select_template?template_source=url&template_url={$ template.attributes.url | encodeURIComponent $}">Launch</a>
+        <a ng-switch-when="true" class="btn btn-default btn-sm ajax-modal" href="/project/stacks/select_template?template_source=url&template_url={$ asset.attributes.url | encodeURIComponent $}">Launch</a>
       </td>
     </tr>
 
@@ -40,9 +40,9 @@
       <td class="detail" colspan="4">
         <dl class="dl-horizontal">
           <dt>Name</dt>
-          <dd>{$ template.name $}</dd>
+          <dd>{$ asset.name $}</dd>
           <dt>Description</dt>
-          <dd>{$ template.description $}</dd>
+          <dd>{$ asset.description $}</dd>
         </dl>
       </td>
     </tr>
