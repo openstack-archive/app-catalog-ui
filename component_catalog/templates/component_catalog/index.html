@@ -32,7 +32,7 @@
         <a ng-switch-default class="btn btn-default btn-sm" target="_blank" href="{$ asset.attributes.indirect_url $}">Install Instructions</a>
         <div ng-switch-when="_undefined_" ng-switch="asset.installed">
           <a ng-switch-default class="btn btn-default btn-sm disabled ajax-modal" href="/}">Checking</a>
-          <a ng-switch-when="false" class="btn btn-default btn-sm ajax-modal" href="/project/images/create/?name={$ asset.name | encodeURIComponent $}&source_type=url&asset_url={$ asset.attributes.url | encodeURIComponent $}&disk_format={$ asset.disk_format $}&architecture={$ asset.architecture $}&minimum_disk={$ asset.min_disk $}&minimum_ram={$ asset.min_ram $}&description={$ asset.description $}">Install</a>
+          <a ng-switch-when="false" class="btn btn-default btn-sm ajax-modal" href="/project/images/create/?name={$ asset.name | encodeURIComponent $}&source_type=url&image_url={$ asset.attributes.url | encodeURIComponent $}&disk_format={$ asset.service.disk_format $}&architecture={$ asset.service.architecture $}&minimum_disk={$ asset.service.min_disk $}&minimum_ram={$ asset.service.min_ram $}&description={$ asset.description $}">Install</a>
           <a ng-switch-when="true" class="btn btn-default btn-sm ajax-modal" href="/project/instances/launch?source_type=image_id&source_id={$ asset.installed_id $}">Launch</a>
           </a>
         </div>
