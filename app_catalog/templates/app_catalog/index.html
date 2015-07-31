@@ -22,7 +22,7 @@
   </thead>
 
   <tbody>
-    <tr ng-repeat-start="asset in assets track by asset.name">
+    <tr ng-repeat-start="asset in assets | orderBy:'-name':true track by asset.name">
       <td class="expander">
         <i class="fa fa-chevron-right" hz-expand-detail duration="200"></i>
       </td>
