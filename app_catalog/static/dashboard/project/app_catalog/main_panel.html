@@ -1,16 +1,36 @@
-<table hz-table ng-cloak
+Service Types: <label ng-repeat="service in service_filters">
+  <input
+    type="checkbox"
+    name="selected_filters[]"
+    value="{$ service.id $}"
+    ng-checked="service_filters_selections[service.id]"
+    ng-click="toggle_service_filter(service.id)"
+  > {$ service.name $}
+</label>
+<table hz-table ng-cloak st-table="dispassets" st-safe-src="assets"
   class="table-striped table-rsp table-detail modern">
   <thead>
     <tr>
+      <th colspan="4">
+        <hz-search-bar group-classes="input-group-sm" icon-classes="fa-search"></hz-search-bar>
+<!--
+        <st-magic-search>
+          <hz-magic-search-bar filter-facets="{$ asset_filter_facets $}" filter-strings="asset_filter_strings">
+          </hz-magic-search-bar>
+        </st-magic-search>
+-->
+      </th>
+    </tr>
+    <tr>
       <th class="expander"></th>
-      <th class="rsp-p1">Name</th>
-      <th class="rsp-p1">License</th>
+      <th st-sort="name" st-sort-default="true" class="rsp-p1">Name</th>
+      <th st-sort='license' class="rsp-p1">License</th>
       <th class="rsp-p1"></th>
     </tr>
   </thead>
 
   <tbody>
-    <tr ng-repeat-start="asset in assets | orderBy:'-name':true track by asset.name">
+    <tr ng-repeat-start="asset in dispassets track by asset.name">
       <td class="expander">
         <i class="fa fa-chevron-right" hz-expand-detail duration="200"></i>
       </td>
@@ -54,4 +74,12 @@
     </tr>
 
   </tbody>
+
+  <tfoot>
+    <tr>
+      <td colspan="5" class="text-center">
+        <div st-pagination="" st-items-by-page="itemsByPage" st-displayed-pages="7"></div>
+      </td>
+    </tr>
+  </tfoot>
 </table>
