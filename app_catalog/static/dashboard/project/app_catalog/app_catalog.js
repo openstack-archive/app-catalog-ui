@@ -42,17 +42,45 @@
         ]).directive('stars', stars);
 
     function appCatalogModel($http, heatAPI, glanceAPI) {
+        var $scope = this;
         var callbacks = [];
-        this.register_callback = function(callback) {
-            callbacks.push(callback);
+        this.assets = [];
+        this.assets_filtered = [];
+        this.service_filters = [
+            {id:'heat', name:'Orchestration'},
+            {id:'glance', name: 'Images'}
+        ];
+        this.service_filters_selections = {
+            'heat':true,
+            'glance':true
         };
         var notify = function(){
             angular.forEach(callbacks, function(callback){
                 callback();
             });
         };
-        this.assets = [];
-        var $scope = this;
+        this.update_assets_filtered = function(){
+            $scope.assets_filtered.length = 0;
+            angular.forEach($scope.assets, function(asset){
+                if($scope.service_filters_selections[asset.service.type] == true){
+                    $scope.assets_filtered.push(asset);
+                }
+            });
+            notify();
+        };
+        this.toggle_service_filter = function(service_name) {
+            var value = $scope.service_filters_selections[service_name];
+            if(value) {
+                value = false;
+            } else {
+                value = true;
+            }
+            $scope.service_filters_selections[service_name] = value;
+            $scope.update_assets_filtered();
+        };
+        this.register_callback = function(callback) {
+            callbacks.push(callback);
+        };
         var heat_req = {
             url: 'http://apps.openstack.org/static/heat_templates.json',
             headers: {'X-Requested-With': undefined}
@@ -77,7 +105,7 @@
                 }
                 process(asset);
             }
-            notify();
+            update_found_assets($scope)
         });
         var glance_req = {
             url: 'http://apps.openstack.org/static/glance_images.json',
@@ -92,7 +120,6 @@
             }
             $scope.glance_names = glance_names;
             update_found_assets($scope)
-            notify();
         });
         $http(glance_req).success(function(data) {
             for (var i in data.assets){
@@ -101,7 +128,6 @@
             }
             $scope.glance_loaded = true;
             update_found_assets($scope);
-            notify();
         });
     }
 
@@ -109,24 +135,30 @@
         $scope.assets = []
         var update = function(){
             $scope.assets = []
-            for (var i in appCatalogModel.assets){
-                var asset = appCatalogModel.assets[i];
+            for (var i in appCatalogModel.assets_filtered){
+                var asset = appCatalogModel.assets_filtered[i];
                 if(typeof asset.tags !== "undefined" && asset.tags.indexOf('app') > -1){
                     $scope.assets.push(asset);
                 }
             }
         };
         appCatalogModel.register_callback(update);
+        $scope.toggle_service_filter = appCatalogModel.toggle_service_filter;
+        $scope.service_filters = appCatalogModel.service_filters;
+        $scope.service_filters_selections = appCatalogModel.service_filters_selections;
     }
 
     function appComponentCatalogTableCtrl($scope, $http, $timeout, appCatalogModel) {
-        $scope.assets = appCatalogModel.assets
+        $scope.assets = appCatalogModel.assets_filtered
         var update = function(){
             $timeout(function() {
-                $scope.assets = appCatalogModel.assets
+                $scope.assets = appCatalogModel.assets_filtered
             }, 0, false);
         };
         appCatalogModel.register_callback(update);
+        $scope.toggle_service_filter = appCatalogModel.toggle_service_filter;
+        $scope.service_filters = appCatalogModel.service_filters;
+        $scope.service_filters_selections = appCatalogModel.service_filters_selections;
     }
 
     function update_found_assets($scope) {
@@ -143,6 +175,7 @@
                }
             }
         }
+        $scope.update_assets_filtered();
     }
 
     function stars() {

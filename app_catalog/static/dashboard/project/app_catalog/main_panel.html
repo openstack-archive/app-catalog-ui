@@ -1,3 +1,12 @@
+Service Types: <label ng-repeat="service in service_filters">
+  <input
+    type="checkbox"
+    name="selected_filters[]"
+    value="{$ service.id $}"
+    ng-checked="service_filters_selections[service.id]"
+    ng-click="toggle_service_filter(service.id)"
+  > {$ service.name $}
+</label>
 <table hz-table ng-cloak
   class="table-striped table-rsp table-detail modern">
   <thead>
