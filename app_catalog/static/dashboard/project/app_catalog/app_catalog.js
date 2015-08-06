@@ -36,8 +36,8 @@
             appComponentCatalogTableCtrl
         ]).service('appCatalogModel', [
             '$http',
-            'horizon.openstack-service-api.heat',
-            'horizon.openstack-service-api.glance',
+            'horizon.app.core.openstack-service-api.heat',
+            'horizon.app.core.openstack-service-api.glance',
             appCatalogModel
         ]).directive('stars', stars);
 
@@ -66,6 +66,25 @@
                     $scope.assets_filtered.push(asset);
                 }
             });
+            var types = {};
+            angular.forEach($scope.assets_filtered, function(asset){
+                types[asset.service.type] = true;
+            });
+//FIXME dedup some of this later.
+            var map = {'heat': 'Orchestration', 'glance': 'Images'};
+            var options = [];
+
+            for (var type in types) {
+                if(type in map) {
+                    options.push({'key':type, 'label':map[type]});
+                }
+            }
+            angular.forEach($scope.asset_filter_facets, function(facet){
+                if(facet.name == 'service.type') {
+//FIXME Doesn't seem to work currently
+//                    facet['options'] = options;
+                }
+            });
             notify();
         };
         this.toggle_service_filter = function(service_name) {
@@ -81,57 +100,59 @@
         this.register_callback = function(callback) {
             callbacks.push(callback);
         };
-        var heat_req = {
-            url: 'http://apps.openstack.org/static/heat_templates.json',
-            headers: {'X-Requested-With': undefined}
-        }
-        $http(heat_req).success(function(data) {
-            for (var i in data.assets){
-                var asset = data.assets[i];
-                $scope.assets.push(asset);
-                var process = function(asset) {
-                    var url = asset.attributes.url;
-                    heatAPI.validate({'template_url': url}).success(function(data){
-                        asset.validated = true;
-                        notify();
-                    }).error(function(data, status){
-                        var str = 'ERROR: Could not retrieve template:'
-                        asset.validated = 'unsupported';
-                        if(status == 400 && data.slice(0, str.length) == str) {
-                            asset.validated = 'error'
-                        }
-                        notify();
-                    });
+        this.init = function(app_catalog_url) {
+            var heat_req = {
+                url: app_catalog_url + '/static/heat_templates.json',
+                headers: {'X-Requested-With': undefined}
+            }
+            $http(heat_req).success(function(data) {
+                for (var i in data.assets){
+                    var asset = data.assets[i];
+                    $scope.assets.push(asset);
+                    var process = function(asset) {
+                        var url = asset.attributes.url;
+                        heatAPI.validate({'template_url': url}, true).success(function(data){
+                            asset.validated = true;
+                            notify();
+                        }).error(function(data, status){
+                            var str = 'ERROR: Could not retrieve template:'
+                            asset.validated = 'unsupported';
+                            if(status == 400 && data.slice(0, str.length) == str) {
+                                asset.validated = 'error'
+                            }
+                            notify();
+                        });
+                    }
+                    process(asset);
                 }
-                process(asset);
+                update_found_assets($scope)
+            });
+            var glance_req = {
+                url: app_catalog_url + '/static/glance_images.json',
+                headers: {'X-Requested-With': undefined}
             }
-            update_found_assets($scope)
-        });
-        var glance_req = {
-            url: 'http://apps.openstack.org/static/glance_images.json',
-            headers: {'X-Requested-With': undefined}
-        }
-        glanceAPI.getImages().success(function(data) {
-            $scope.glance_images = data;
-            var glance_names = {}
-            for (var i in data.items){
-                var name = data.items[i]['name'];
-                glance_names[name] = {'id': data.items[i]['id']};
-            }
-            $scope.glance_names = glance_names;
-            update_found_assets($scope)
-        });
-        $http(glance_req).success(function(data) {
-            for (var i in data.assets){
-                var asset = data.assets[i];
-                $scope.assets.push(asset);
-            }
-            $scope.glance_loaded = true;
-            update_found_assets($scope);
-        });
+            glanceAPI.getImages().success(function(data) {
+                $scope.glance_images = data;
+                var glance_names = {}
+                for (var i in data.items){
+                    var name = data.items[i]['name'];
+                    glance_names[name] = {'id': data.items[i]['id']};
+                }
+                $scope.glance_names = glance_names;
+                update_found_assets($scope)
+            });
+            $http(glance_req).success(function(data) {
+                for (var i in data.assets){
+                    var asset = data.assets[i];
+                    $scope.assets.push(asset);
+                }
+                $scope.glance_loaded = true;
+                update_found_assets($scope);
+            });
+        };
         this.asset_filter_strings = {
             cancel: gettext('Cancel'),
-            prompt: gettext('Prompt'),
+            prompt: gettext('Search'),
             remove: gettext('Remove'),
             text: gettext('Text')
         };
@@ -139,6 +160,21 @@
         {
           name: 'name',
           label: gettext('Name'),
+          singleton: true
+        },
+        {
+          name: 'license',
+          label: gettext('License'),
+          singleton: true
+        },
+        {
+          name: 'service.type',
+          label: gettext('Service Type'),
+//FIXME make dynamic later.
+          options: [
+            {key: 'heat', label: 'Orchestration'},
+            {key: 'glance', label: 'Images'}
+          ],
           singleton: true
         }];
     }
@@ -149,6 +185,7 @@
         $scope.service_filters_selections = appCatalogModel.service_filters_selections;
         $scope.asset_filter_strings = appCatalogModel.asset_filter_strings;
         $scope.asset_filter_facets = appCatalogModel.asset_filter_facets;
+        $scope.init = appCatalogModel.init;
     }
 
     function appCatalogTableCtrl($scope, $http, $timeout, appCatalogModel) {

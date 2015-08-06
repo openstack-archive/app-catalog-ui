@@ -1,4 +1,5 @@
 from horizon import views
+from django.conf import settings
 
 
 class IndexView(views.APIView):
@@ -6,5 +7,5 @@ class IndexView(views.APIView):
     template_name = 'app_catalog/index.html'
 
     def get_data(self, request, context, *args, **kwargs):
-        # Add data to the context here...
+        context['APP_CATALOG_URL'] = getattr(settings, 'APP_CATALOG_URL', 'https://apps.openstack.org')
         return context
