@@ -38,27 +38,47 @@
             '$http',
             'horizon.app.core.openstack-service-api.heat',
             'horizon.app.core.openstack-service-api.glance',
+            'horizon.app.core.openstack-service-api.serviceCatalog',
             appCatalogModel
         ]).directive('stars', stars);
 
-    function appCatalogModel($http, heatAPI, glanceAPI) {
+    function appCatalogModel($http, heatAPI, glanceAPI, serviceCatalog) {
         var $scope = this;
         var callbacks = [];
         this.assets = [];
         this.assets_filtered = [];
+//FIXME reduce duplication here....
+        this.supported_service_type_to_label = {
+            heat: 'Orchestration',
+            glance: 'Images',
+            murano: 'Murano'
+        };
         this.service_filters = [
             {id:'heat', name:'Orchestration'},
-            {id:'glance', name: 'Images'}
+            {id:'glance', name: 'Images'},
+            {id:'murano', name: 'Murano'}
         ];
         this.service_filters_selections = {
-            'heat':true,
-            'glance':true
+            'heat':false,
+            'glance':false,
+            'murano':false
         };
         var notify = function(){
             angular.forEach(callbacks, function(callback){
                 callback();
             });
         };
+//FIXME [{'name':'heat', 'type':'orchestration'}, {'name':'glance', 'type':'image'}]
+        serviceCatalog.get().then(function(catalog){
+            angular.forEach(catalog, function(entry){
+                console.log(entry, $scope.supported_service_type_to_label);
+                if(entry.name in $scope.supported_service_type_to_label) {
+                    $scope.service_filters_selections[entry.name] = true;
+                }
+            });
+            $scope.catalog = catalog;
+            $scope.update_assets_filtered();
+        });
         this.update_assets_filtered = function(){
             $scope.assets_filtered.length = 0;
             angular.forEach($scope.assets, function(asset){
@@ -149,6 +169,20 @@
                 $scope.glance_loaded = true;
                 update_found_assets($scope);
             });
+            var murano_req = {
+                url: app_catalog_url + '/static/murano_apps.json',
+                headers: {'X-Requested-With': undefined}
+            }
+            $http(murano_req).success(function(data) {
+                for (var i in data.assets){
+                    var asset = data.assets[i];
+//FIXME work around until service types get into app-catalog repo
+                    asset.service = {type: 'murano'};
+                    $scope.assets.push(asset);
+                }
+                $scope.murano_loaded = true;
+                update_found_assets($scope);
+            });
         };
         this.asset_filter_strings = {
             cancel: gettext('Cancel'),
@@ -173,7 +207,8 @@
 //FIXME make dynamic later.
           options: [
             {key: 'heat', label: 'Orchestration'},
-            {key: 'glance', label: 'Images'}
+            {key: 'glance', label: 'Images'},
+            {key: 'murano', label: 'Murano'}
           ],
           singleton: true
         }];
