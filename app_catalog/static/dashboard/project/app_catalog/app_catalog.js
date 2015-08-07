@@ -71,7 +71,6 @@
 //FIXME [{'name':'heat', 'type':'orchestration'}, {'name':'glance', 'type':'image'}]
         serviceCatalog.get().then(function(catalog){
             angular.forEach(catalog, function(entry){
-                console.log(entry, $scope.supported_service_type_to_label);
                 if(entry.name in $scope.supported_service_type_to_label) {
                     $scope.service_filters_selections[entry.name] = true;
                 }
@@ -82,8 +81,16 @@
         this.update_assets_filtered = function(){
             $scope.assets_filtered.length = 0;
             angular.forEach($scope.assets, function(asset){
-                if($scope.service_filters_selections[asset.service.type] == true){
-                    $scope.assets_filtered.push(asset);
+                if($scope.service_filters_selections[asset.service.type] == true || asset.service.type == 'bundle'){
+                    var filtered_dep = false;
+                    angular.forEach(asset.depends, function(dep){
+                      if($scope.service_filters_selections[dep.asset.service.type] == false){
+                          filtered_dep = true;
+                      }
+                    });
+                    if(!filtered_dep) {
+                        $scope.assets_filtered.push(asset);
+                    }
                 }
             });
             var types = {};
@@ -176,8 +183,6 @@
             $http(murano_req).success(function(data) {
                 for (var i in data.assets){
                     var asset = data.assets[i];
-//FIXME work around until service types get into app-catalog repo
-                    asset.service = {type: 'murano'};
                     $scope.assets.push(asset);
                 }
                 $scope.murano_loaded = true;
@@ -263,6 +268,17 @@
                }
             }
         }
+        var asset_name_to_asset = {};
+        angular.forEach($scope.assets, function(asset){
+            asset_name_to_asset[asset.name] = asset;
+        });
+        angular.forEach($scope.assets, function(asset){
+            if('depends' in asset) {
+                angular.forEach(asset.depends, function(dep){
+                    dep.asset = asset_name_to_asset[dep.name];
+                });
+            }
+        });
         $scope.update_assets_filtered();
     }
 
