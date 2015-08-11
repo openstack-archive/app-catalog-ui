@@ -22,7 +22,7 @@ ADD_PANEL = 'app_catalog.panel.AppCatalog'
 
 ADD_INSTALLED_APPS = ['app_catalog']
 
-ADD_ANGULAR_MODULES = ['hz.dashboard.project.app_catalog']
+ADD_ANGULAR_MODULES = ['horizon.dashboard.project.app_catalog']
 
 ADD_JS_FILES = [
   'dashboard/project/app_catalog/app_catalog.js'
