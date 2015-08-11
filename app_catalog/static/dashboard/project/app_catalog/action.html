@@ -1,0 +1,17 @@
+<div ng-switch="asset.service.type">
+  <div ng-switch-when="heat" ng-switch="asset.validated">
+    <a ng-switch-default ng-class="extraclasses" class="btn btn-default disabled ajax-modal" href="/}">Checking</a>
+    <a ng-switch-when="error" ng-class="extraclasses" class="btn btn-default disabled ajax-modal" href="/">Error</a>
+    <a ng-switch-when="unsupported" ng-class="extraclasses" class="btn btn-default disabled ajax-modal" href="/">Unsupported</a>
+    <a ng-switch-when="true" ng-class="extraclasses" class="btn btn-success btn-default ajax-modal" href="/project/stacks/select_template?template_source=url&template_url={$ asset.attributes.url | encodeURIComponent $}">Launch</a>
+  </div>
+  <div ng-switch-when="glance" ng-switch="asset.attributes.indirect_url || '_undefined_'">
+    <a ng-switch-default ng-class="extraclasses" class="btn btn-primary btn-default" target="_blank" href="{$ asset.attributes.indirect_url $}">Install Instructions</a>
+    <div ng-switch-when="_undefined_" ng-switch="asset.installed">
+      <a ng-switch-default ng-class="extraclasses" class="btn btn-default disabled ajax-modal" href="/}">Checking</a>
+      <a ng-switch-when="false" ng-class="extraclasses" class="btn btn-primary btn-default ajax-modal" href="/project/images/create/?name={$ asset.name | encodeURIComponent $}&source_type=url&image_url={$ asset.attributes.url | encodeURIComponent $}&disk_format={$ asset.service.disk_format $}&architecture={$ asset.service.architecture $}&minimum_disk={$ asset.service.min_disk $}&minimum_ram={$ asset.service.min_ram $}&description={$ asset.description $}">Install</a>
+      <a ng-switch-when="true" ng-class="extraclasses" class="btn btn-success btn-default ajax-modal" href="/project/instances/launch?source_type=image_id&source_id={$ asset.installed_id $}">Launch</a>
+      </a>
+    </div>
+  </div>
+</div>
