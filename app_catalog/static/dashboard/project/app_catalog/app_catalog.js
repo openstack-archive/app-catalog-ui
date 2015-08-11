@@ -19,13 +19,20 @@
     'use strict';
 
     angular
-        .module('hz.dashboard.project.app_catalog', ['hz.dashboard'])
+        .module('horizon.dashboard.project.app_catalog', [])
         .filter('encodeURIComponent', function() {
             return window.encodeURIComponent;
+        }).directive('appAction', function () {
+            return {
+                restrict: 'EA',
+//FIXME static
+                templateUrl: '/static/dashboard/project/app_catalog/action.html'
+            };
         }).controller('appCatalogTableCtrl', [
             '$scope',
             '$http',
             '$timeout',
+            '$modal',
             'appCatalogModel',
             appCatalogTableCtrl
         ]).controller('appComponentCatalogTableCtrl', [
@@ -228,7 +235,7 @@
         $scope.init = appCatalogModel.init;
     }
 
-    function appCatalogTableCtrl($scope, $http, $timeout, appCatalogModel) {
+    function appCatalogTableCtrl($scope, $http, $timeout, $modal, appCatalogModel) {
         $scope.assets = []
         var update = function(){
             $scope.assets = []
@@ -239,8 +246,28 @@
                 }
             }
         };
+//FIXME remove. probably belongs in its own directive...
+//        var textSearchWatcher = $scope.$on('textSearch', function(event, text) {
+//          console.log(text);
+//        });
         appCatalogModel.register_callback(update);
         common_init($scope, appCatalogModel);
+        $scope.switcher = {pannel: 'app', active: 'grid'};
+        $scope.changeActivePanel = function(name) {
+            $scope.switcher['active'] = name;
+        };
+        $scope.details = function(asset) {
+            var newscope = $scope.$new();
+            newscope.asset = asset;
+            var modal = $modal.open({
+//FIXME static from where?
+                templateUrl: "/static/dashboard/project/app_catalog/details_panel.html",
+                scope: newscope
+            });
+            newscope.cancel = function() {
+                modal.dismiss('');
+            };
+        };
     }
 
     function appComponentCatalogTableCtrl($scope, $http, $timeout, appCatalogModel) {
@@ -252,6 +279,7 @@
         };
         appCatalogModel.register_callback(update);
         common_init($scope, appCatalogModel);
+        $scope.switcher = {pannel: 'component', active: 'list'};
     }
 
     function update_found_assets($scope) {

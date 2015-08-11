@@ -1,0 +1,47 @@
+<div>
+  <dl class="dl-horizontal">
+    <dt>
+      <div style="
+        width:64px;
+        height:64px;
+        overflow: hidden;
+        ">
+        <img style="
+          margin: {$ asset.icon.top/2 $}px 0px 0px {$ asset.icon.left/2 $}px;
+          height: {$ asset.icon.height/2 $}px;
+          " src="{$ asset.icon.url $}">
+      </div>
+    </dt>
+    <dd>
+      <div>{$ asset.name $}</div>
+      <div>{$ asset.provided_by.company $}</div>
+      <div style="float:right"><div app-action></div>
+    </dd>
+    <dt>License</dt>
+    <dd ng-switch="asset.license_url || '_undefined_'">
+      <div>{$ asset.license $}</div>
+      <a ng-switch-default class="btn btn-default btn-sm" target="_blank" href="{$ asset.license_url $}">License Details</a>
+      <div ng-switch-when="_undefined_"></div>
+    </dd>
+    <dt>Description</dt>
+    <dd>{$ asset.description $}</dd>
+    <dt ng-switch="asset.depends || '_undefined_'">
+      <div ng-switch-default>Dependencies</div>
+      <div ng-switch-when="_undefined_"></div>
+    </dt>
+    <dd ng-switch="asset.depends || '_undefined_'">
+      <div ng-switch-default>
+        <table>
+  	<tr ng-repeat="dep in asset.depends">
+  	  <td>{$ dep.name $}</td>
+  	  <td ng-switch="dep.asset.installed">
+  	    <a ng-switch-default class="btn btn-default btn-sm disabled ajax-modal" href="/}">Checking</a>
+  	    <a ng-switch-when="false" class="btn btn-default btn-sm ajax-modal" href="/project/images/create/?name={$ dep.asset.name | encodeURIComponent $}&source_type=url&image_url={$ dep.asset.attributes.url | encodeURIComponent $}&disk_format={$ dep.asset.service.disk_format $}&architecture={$ dep.asset.service.architecture $}&minimum_disk={$ dep.asset.service.min_disk $}&minimum_ram={$ dep.asset.service.min_ram $}&description={$ dep.asset.description $}">Install</a>
+  	    <a ng-switch-when="true" class="btn ntn-default btn-sm disbled">Installed</a>
+  	  </td>
+  	</tr>
+        </table>
+      <div ng-switch-when="_undefined_"></div>
+    </dd>
+  </dl>
+</div>
