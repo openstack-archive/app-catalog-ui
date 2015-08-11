@@ -1,100 +1,174 @@
-Service Types: <label ng-repeat="service in service_filters">
-  <input
-    type="checkbox"
-    name="selected_filters[]"
-    value="{$ service.id $}"
-    ng-checked="service_filters_selections[service.id]"
-    ng-click="toggle_service_filter(service.id)"
-  > {$ service.name $}
-</label>
-<table hz-table ng-cloak st-table="dispassets" st-safe-src="assets"
-  class="table-striped table-rsp table-detail modern">
-  <thead>
-    <tr>
-      <th colspan="4">
-        <st-magic-search>
-          <hz-magic-search-bar filter-facets="asset_filter_facets" filter-strings="asset_filter_strings">
-          </hz-magic-search-bar>
-        </st-magic-search>
-      </th>
-    </tr>
-    <tr>
-      <th class="expander"></th>
-      <th st-sort="name" st-sort-default="true" class="rsp-p1">Name</th>
-      <th st-sort='license' class="rsp-p1">License</th>
-      <th class="rsp-p1"></th>
-    </tr>
-  </thead>
+<div style="margin-bottom: 4px;">
+  Service Types:
+  <label ng-repeat="service in service_filters">
+    <input
+      type="checkbox"
+      name="selected_filters[]"
+      value="{$ service.id $}"
+      ng-checked="service_filters_selections[service.id]"
+      ng-click="toggle_service_filter(service.id)"
+      > {$ service.name $}
+  </label>
+  <span ng-switch="switcher.pannel" style="float:right">
+    <span ng-switch-when="app" style="float: right" class="toggleView btn-group">
+<!--FIXME path?-->
+      <img class="btn btn-default" ng-class="{active: (switcher.active == 'grid')}" src="/static/dashboard/project/app_catalog/1439233859_grid.png" ng-click="changeActivePanel('grid')"/>
+      <img class="btn btn-default" ng-class="{active: (switcher.active == 'list')}" src="/static/dashboard/project/app_catalog/1439233889_list.png" ng-click="changeActivePanel('list')"/>
+    </span>
+  </span>
+</div>
 
-  <tbody>
-    <tr ng-repeat-start="asset in dispassets track by asset.name">
-      <td class="expander">
-        <i class="fa fa-chevron-right" hz-expand-detail duration="200"></i>
-      </td>
-      <td class="rsp-p1">{$ asset.name $}</td>
-      <td class="rsp-p2">{$ asset.license $}</td>
-      <td ng-switch="asset.service.type">
-        <div ng-switch-when="heat" ng-switch="asset.validated">
-            <a ng-switch-default class="btn btn-default btn-sm disabled ajax-modal" href="/}">Checking</a>
-            <a ng-switch-when="error" class="btn btn-default btn-sm disabled ajax-modal" href="/">Error</a>
-            <a ng-switch-when="unsupported" class="btn btn-default btn-sm disabled ajax-modal" href="/">Unsupported</a>
-            <a ng-switch-when="true" class="btn btn-default btn-sm ajax-modal" href="/project/stacks/select_template?template_source=url&template_url={$ asset.attributes.url | encodeURIComponent $}">Launch</a>
+<div ng-switch="switcher.active">
+<!--  <hz-magic-search-bar filter-facets="asset_filter_facets" filter-strings="asset_filter_strings">
+  </hz-magic-search-bar>-->
+  <div ng-switch-when="grid" style="
+    background-color:#f9f9f9;
+    overflow: auto;
+    border-color:#cccccc; border-width:1px; border-style: solid;
+    ">
+    <div ng-repeat="asset in assets | orderBy:'name':false" style="border:1px;
+      margin: 10px;
+      width: 200px; height: 180px; float: left;
+      ">
+      <div ng-click="details(asset)" style="
+        margin:10px;
+        border-color:#cccccc; border-width:1px;
+        border-radius: 2px;
+        box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+        padding:8px;
+        height: 170px;
+        overflow: hidden;
+        background-color:#ffffff;
+        position: relative;
+        ">
+        <div style="">
+  	<div style="
+  	  width:128px;
+  	  height:128px;
+  	  overflow: hidden;
+  	  margin-left: auto; margin-right:auto;
+  	  ">
+     
+  	  <img style="
+  	    margin: {$ asset.icon.top $}px 0px 0px {$ asset.icon.left $}px;
+  	    height: {$ asset.icon.height $}px;
+  	    " src="{$ asset.icon.url $}">
+     
+  	</div>
+     
+  	<span style="
+  	  max-height: 100%;
+  	  width: 23px;
+  	  height: 23px;
+  	  top: 0;
+  	  right: 0;
+  	  position: absolute;
+  	  background: rgba(0, 0, 0, 0) url('http://apps.openstack.org/static/images/featured-corner-{$ asset.service.type $}.png') no-repeat scroll right top;
+  	  ">
+  	</span>
         </div>
-        <div ng-switch-when="glance" ng-switch="asset.attributes.indirect_url || '_undefined_'">
-          <a ng-switch-default class="btn btn-default btn-sm" target="_blank" href="{$ asset.attributes.indirect_url $}">Install Instructions</a>
-          <div ng-switch-when="_undefined_" ng-switch="asset.installed">
-            <a ng-switch-default class="btn btn-default btn-sm disabled ajax-modal" href="/}">Checking</a>
-            <a ng-switch-when="false" class="btn btn-default btn-sm ajax-modal" href="/project/images/create/?name={$ asset.name | encodeURIComponent $}&source_type=url&image_url={$ asset.attributes.url | encodeURIComponent $}&disk_format={$ asset.service.disk_format $}&architecture={$ asset.service.architecture $}&minimum_disk={$ asset.service.min_disk $}&minimum_ram={$ asset.service.min_ram $}&description={$ asset.description $}">Install</a>
-            <a ng-switch-when="true" class="btn btn-default btn-sm ajax-modal" href="/project/instances/launch?source_type=image_id&source_id={$ asset.installed_id $}">Launch</a>
-            </a>
-          </div>
+        <div title="{$ asset.name $}" style="
+  	overflow: hidden;
+  	white-space: nowrap;
+  	position: relative;
+  	line-height: 18px;
+  	font-size: 16px;
+  	"> {$ asset.name $}
+  	<span style="
+  	  max-height: 100%;
+  	  width: 40px;
+  	  height: 20px;
+  	  bottom: 0;
+  	  right: 0;
+  	  position: absolute;
+  	  background: rgba(0, 0, 0, 0) linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1)) repeat scroll 0 0;
+  	  ">
+  	</span>
         </div>
-      </td>
-    </tr>
+        <div title="{$ asset.provided_by.name $}" style="
+  	overflow: hidden;
+  	white-space: nowrap;
+  	position: relative;
+  	line-height: 14px;
+  	font-size: 12px;
+  	"> {$ asset.provided_by.name $}
+  	<span style="
+  	  max-height: 100%;
+  	  width: 40px;
+  	  height: 20px;
+  	  bottom: 0;
+  	  right: 0;
+  	  position: absolute;
+  	  background: rgba(0, 0, 0, 0) linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1)) repeat scroll 0 0;
+  	  ">
+  	</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    <tr ng-repeat-end class="detail-row">
-      <td class="detail" colspan="4">
-        <dl class="dl-horizontal">
-          <dt>Name</dt>
-          <dd>{$ asset.name $}</dd>
-          <dt>Description</dt>
-          <dd>{$ asset.description $}</dd>
-          <dt>Company</dt>
-          <dd>{$ asset.provided_by.company $}</dd>
-          <dt></dt>
-          <dd ng-switch="asset.license_url || '_undefined_'">
-            <a ng-switch-default class="btn btn-default btn-sm" target="_blank" href="{$ asset.license_url $}">License Details</a>
-            <div ng-switch-when="_undefined_"></div>
-          </dd>
-          <dt ng-switch="asset.depends || '_undefined_'">
-            <div ng-switch-default>Dependencies</div>
-            <div ng-switch-when="_undefined_"></div>
-          </dt>
-          <dd ng-switch="asset.depends || '_undefined_'">
-            <div ng-switch-default>
-              <table>
-                <tr ng-repeat="dep in asset.depends">
-                  <td>{$ dep.name $}</td>
-                  <td ng-switch="dep.asset.installed">
-                    <a ng-switch-default class="btn btn-default btn-sm disabled ajax-modal" href="/}">Checking</a>
-                    <a ng-switch-when="false" class="btn btn-default btn-sm ajax-modal" href="/project/images/create/?name={$ dep.asset.name | encodeURIComponent $}&source_type=url&image_url={$ dep.asset.attributes.url | encodeURIComponent $}&disk_format={$ dep.asset.service.disk_format $}&architecture={$ dep.asset.service.architecture $}&minimum_disk={$ dep.asset.service.min_disk $}&minimum_ram={$ dep.asset.service.min_ram $}&description={$ dep.asset.description $}">Install</a>
-                    <a ng-switch-when="true" class="btn ntn-default btn-sm disbled">Installed</a>
-                  </td>
-                </tr>
-              </table>
-            <div ng-switch-when="_undefined_"></div>
-          </dd>
-        </dl>
-      </td>
-    </tr>
-
-  </tbody>
-
-  <tfoot>
-    <tr>
-      <td colspan="5" class="text-center">
-        <div st-pagination="" st-items-by-page="itemsByPage" st-displayed-pages="7"></div>
-      </td>
-    </tr>
-  </tfoot>
-</table>
+  <div ng-switch-when="list">
+    <table hz-table ng-cloak st-table="dispassets" st-safe-src="assets"
+      class="table-striped table-rsp table-detail modern">
+      <thead>
+        <tr>
+          <th colspan="4">
+    	<st-magic-search>
+    	  <hz-magic-search-bar filter-facets="asset_filter_facets" filter-strings="asset_filter_strings">
+    	  </hz-magic-search-bar>
+    	</st-magic-search>
+          </th>
+        </tr>
+        <tr>
+          <th class="expander"></th>
+          <th st-sort="name" st-sort-default="true" class="rsp-p1">Name</th>
+          <th st-sort='license' class="rsp-p1">License</th>
+          <th class="rsp-p1"></th>
+        </tr>
+      </thead>
+    
+      <tbody>
+        <tr ng-repeat-start="asset in dispassets track by asset.name">
+          <td class="expander">
+    	<i class="fa fa-chevron-right" hz-expand-detail duration="200"></i>
+          </td>
+          <td class="rsp-p1">{$ asset.name $}</td>
+          <td class="rsp-p2">{$ asset.license $}</td>
+          <td ng-switch="asset.service.type">
+    	<div ng-switch-when="heat" ng-switch="asset.validated">
+    	    <a ng-switch-default class="btn btn-default btn-sm disabled ajax-modal" href="/}">Checking</a>
+    	    <a ng-switch-when="error" class="btn btn-default btn-sm disabled ajax-modal" href="/">Error</a>
+    	    <a ng-switch-when="unsupported" class="btn btn-default btn-sm disabled ajax-modal" href="/">Unsupported</a>
+    	    <a ng-switch-when="true" class="btn btn-default btn-sm ajax-modal" href="/project/stacks/select_template?template_source=url&template_url={$ asset.attributes.url | encodeURIComponent $}">Launch</a>
+    	</div>
+    	<div ng-switch-when="glance" ng-switch="asset.attributes.indirect_url || '_undefined_'">
+    	  <a ng-switch-default class="btn btn-default btn-sm" target="_blank" href="{$ asset.attributes.indirect_url $}">Install Instructions</a>
+    	  <div ng-switch-when="_undefined_" ng-switch="asset.installed">
+    	    <a ng-switch-default class="btn btn-default btn-sm disabled ajax-modal" href="/}">Checking</a>
+    	    <a ng-switch-when="false" class="btn btn-default btn-sm ajax-modal" href="/project/images/create/?name={$ asset.name | encodeURIComponent $}&source_type=url&image_url={$ asset.attributes.url | encodeURIComponent $}&disk_format={$ asset.service.disk_format $}&architecture={$ asset.service.architecture $}&minimum_disk={$ asset.service.min_disk $}&minimum_ram={$ asset.service.min_ram $}&description={$ asset.description $}">Install</a>
+    	    <a ng-switch-when="true" class="btn btn-default btn-sm ajax-modal" href="/project/instances/launch?source_type=image_id&source_id={$ asset.installed_id $}">Launch</a>
+    	    </a>
+    	  </div>
+    	</div>
+          </td>
+        </tr>
+    
+        <tr ng-repeat-end class="detail-row">
+          <td class="detail" colspan="4">
+<!--FIXME static-->
+            <ng-include src="'/static/dashboard/project/app_catalog/_details_panel.html'"></ng-include>
+          </td>
+        </tr>
+    
+      </tbody>
+    
+      <tfoot>
+        <tr>
+          <td colspan="5" class="text-center">
+    	<div st-pagination="" st-items-by-page="itemsByPage" st-displayed-pages="7"></div>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
