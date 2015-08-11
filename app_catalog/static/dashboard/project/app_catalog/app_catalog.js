@@ -241,6 +241,10 @@
         };
         appCatalogModel.register_callback(update);
         common_init($scope, appCatalogModel);
+        $scope.switcher = {pannel: 'app', active: 'grid'};
+        $scope.changeActivePanel = function(name) {
+            $scope.switcher['active'] = name;
+        };
     }
 
     function appComponentCatalogTableCtrl($scope, $http, $timeout, appCatalogModel) {
@@ -252,6 +256,7 @@
         };
         appCatalogModel.register_callback(update);
         common_init($scope, appCatalogModel);
+        $scope.switcher = {pannel: 'component', active: 'list'};
     }
 
     function update_found_assets($scope) {
