@@ -16,7 +16,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name = 'apps-catalog-ui',
+    name = 'app-catalog-ui',
     version = '0.0.1',
     description = 'OpenStack Application Catalog for OpenStack Dashboard',
     author = 'Kevin Fox',
