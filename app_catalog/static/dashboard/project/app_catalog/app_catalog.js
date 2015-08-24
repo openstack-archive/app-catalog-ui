@@ -135,11 +135,11 @@
             callbacks.push(callback);
         };
         this.init = function(app_catalog_url) {
-            var heat_req = {
-                url: app_catalog_url + '/static/heat_templates.json',
+            var req = {
+                url: app_catalog_url + '/api/v1/assets',
                 headers: {'X-Requested-With': undefined}
             }
-            $http(heat_req).success(function(data) {
+            $http(req).success(function(data) {
                 for (var i in data.assets){
                     var asset = data.assets[i];
                     $scope.assets.push(asset);
@@ -157,14 +157,14 @@
                             notify();
                         });
                     }
-                    process(asset);
+                    if (asset.service.type == 'heat') {
+                        process(asset);
+                    }
                 }
+                $scope.glance_loaded = true;
+                $scope.murano_loaded = true;
                 update_found_assets($scope)
             });
-            var glance_req = {
-                url: app_catalog_url + '/static/glance_images.json',
-                headers: {'X-Requested-With': undefined}
-            }
             glanceAPI.getImages().success(function(data) {
                 $scope.glance_images = data;
                 var glance_names = {}
@@ -174,26 +174,6 @@
                 }
                 $scope.glance_names = glance_names;
                 update_found_assets($scope)
-            });
-            $http(glance_req).success(function(data) {
-                for (var i in data.assets){
-                    var asset = data.assets[i];
-                    $scope.assets.push(asset);
-                }
-                $scope.glance_loaded = true;
-                update_found_assets($scope);
-            });
-            var murano_req = {
-                url: app_catalog_url + '/static/murano_apps.json',
-                headers: {'X-Requested-With': undefined}
-            }
-            $http(murano_req).success(function(data) {
-                for (var i in data.assets){
-                    var asset = data.assets[i];
-                    $scope.assets.push(asset);
-                }
-                $scope.murano_loaded = true;
-                update_found_assets($scope);
             });
         };
         this.asset_filter_strings = {
