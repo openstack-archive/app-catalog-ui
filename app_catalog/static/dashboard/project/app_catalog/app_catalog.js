@@ -33,12 +33,14 @@
             '$http',
             '$timeout',
             '$modal',
+            'horizon.framework.widgets.toast.service',
             'appCatalogModel',
             appCatalogTableCtrl
         ]).controller('appComponentCatalogTableCtrl', [
             '$scope',
             '$http',
             '$timeout',
+            'horizon.framework.widgets.toast.service',
             'appCatalogModel',
             appComponentCatalogTableCtrl
         ]).service('appCatalogModel', [
@@ -51,7 +53,12 @@
 
     function appCatalogModel($http, heatAPI, glanceAPI, serviceCatalog) {
         var $scope = this;
-        var callbacks = [];
+        var callbacks = {
+            update: [],
+            error: [],
+            deprecated: [],
+            retired: []
+        };
         this.assets = [];
         this.assets_filtered = [];
 //FIXME reduce duplication here....
@@ -70,8 +77,23 @@
             'glance':false,
             'murano':false
         };
-        var notify = function(){
-            angular.forEach(callbacks, function(callback){
+        var notify_update = function(){
+            angular.forEach(callbacks['update'], function(callback){
+                callback();
+            });
+        };
+        var notify_error = function(message){
+            angular.forEach(callbacks['error'], function(callback){
+                callback(message);
+            });
+        };
+        var notify_deprecated = function(message){
+            angular.forEach(callbacks['deprecated'], function(callback){
+                callback(message);
+            });
+        };
+        var notify_retired = function(){
+            angular.forEach(callbacks['retired'], function(callback){
                 callback();
             });
         };
@@ -119,7 +141,7 @@
 //                    facet['options'] = options;
                 }
             });
-            notify();
+            notify_update();
         };
         this.toggle_service_filter = function(service_name) {
             var value = $scope.service_filters_selections[service_name];
@@ -131,8 +153,8 @@
             $scope.service_filters_selections[service_name] = value;
             $scope.update_assets_filtered();
         };
-        this.register_callback = function(callback) {
-            callbacks.push(callback);
+        this.register_callback = function(type, callback) {
+            callbacks[type].push(callback);
         };
         this.init = function(app_catalog_url) {
             var req = {
@@ -140,6 +162,12 @@
                 headers: {'X-Requested-With': undefined}
             }
             $http(req).success(function(data) {
+                if('deprecated' in data) {
+                    notify_deprecated(data['deprecated']);
+                }
+                if('retired' in data) {
+                    notify_retired();
+                }
                 for (var i in data.assets){
                     var asset = data.assets[i];
                     $scope.assets.push(asset);
@@ -147,14 +175,14 @@
                         var url = asset.attributes.url;
                         heatAPI.validate({'template_url': url}, true).success(function(data){
                             asset.validated = true;
-                            notify();
+                            notify_update();
                         }).error(function(data, status){
                             var str = 'ERROR: Could not retrieve template:'
                             asset.validated = 'unsupported';
                             if(status == 400 && data.slice(0, str.length) == str) {
-                                asset.validated = 'error'
+                                asset.validated = 'error';
                             }
-                            notify();
+                            notify_update();
                         });
                     }
                     if (asset.service.type == 'heat') {
@@ -163,7 +191,9 @@
                 }
                 $scope.glance_loaded = true;
                 $scope.murano_loaded = true;
-                update_found_assets($scope)
+                update_found_assets($scope);
+            }).error(function() {
+                notify_error('There was an error while retrieving entries from the Application Catalog.');
             });
             glanceAPI.getImages().success(function(data) {
                 $scope.glance_images = data;
@@ -173,7 +203,7 @@
                     glance_names[name] = {'id': data.items[i]['id']};
                 }
                 $scope.glance_names = glance_names;
-                update_found_assets($scope)
+                update_found_assets($scope);
             });
         };
         this.asset_filter_strings = {
@@ -206,16 +236,36 @@
         }];
     }
 
-    function common_init($scope, appCatalogModel) {
+    function common_init($scope, $modal, toast, appCatalogModel) {
         $scope.toggle_service_filter = appCatalogModel.toggle_service_filter;
         $scope.service_filters = appCatalogModel.service_filters;
         $scope.service_filters_selections = appCatalogModel.service_filters_selections;
         $scope.asset_filter_strings = appCatalogModel.asset_filter_strings;
         $scope.asset_filter_facets = appCatalogModel.asset_filter_facets;
         $scope.init = appCatalogModel.init;
+
+        var retired = function(){
+            var newscope = $scope.$new();
+            var modal = $modal.open({
+                templateUrl: "/static/dashboard/project/app_catalog/retired_panel.html",
+                scope: newscope
+            });
+            newscope.cancel = function() {
+                modal.dismiss('');
+            };
+        }
+        var error = function(message){
+          toast.add('error', message);
+        }
+        var deprecated = function(message){
+          toast.add('warning', message);
+        }
+        appCatalogModel.register_callback('error', error);
+        appCatalogModel.register_callback('deprecated', deprecated);
+        appCatalogModel.register_callback('retired', retired);
     }
 
-    function appCatalogTableCtrl($scope, $http, $timeout, $modal, appCatalogModel) {
+    function appCatalogTableCtrl($scope, $http, $timeout, $modal, toast, appCatalogModel) {
         $scope.assets = []
         var update = function(){
             $scope.assets = []
@@ -230,8 +280,8 @@
 //        var textSearchWatcher = $scope.$on('textSearch', function(event, text) {
 //          console.log(text);
 //        });
-        appCatalogModel.register_callback(update);
-        common_init($scope, appCatalogModel);
+        appCatalogModel.register_callback('update', update);
+        common_init($scope, $modal, toast, appCatalogModel);
         $scope.switcher = {pannel: 'app', active: 'grid'};
         $scope.changeActivePanel = function(name) {
             $scope.switcher['active'] = name;
@@ -250,15 +300,15 @@
         };
     }
 
-    function appComponentCatalogTableCtrl($scope, $http, $timeout, appCatalogModel) {
+    function appComponentCatalogTableCtrl($scope, $http, $timeout, toast, appCatalogModel) {
         $scope.assets = appCatalogModel.assets_filtered
         var update = function(){
             $timeout(function() {
                 $scope.assets = appCatalogModel.assets_filtered
             }, 0, false);
         };
-        appCatalogModel.register_callback(update);
-        common_init($scope, appCatalogModel);
+        appCatalogModel.register_callback('update', update);
+        common_init($scope, toast, appCatalogModel);
         $scope.switcher = {pannel: 'component', active: 'list'};
     }
 
