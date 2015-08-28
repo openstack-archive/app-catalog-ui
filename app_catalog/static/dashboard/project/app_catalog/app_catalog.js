@@ -40,18 +40,20 @@
             '$scope',
             '$http',
             '$timeout',
+            '$modal',
             'horizon.framework.widgets.toast.service',
             'appCatalogModel',
             appComponentCatalogTableCtrl
         ]).service('appCatalogModel', [
             '$http',
+            '$injector',
             'horizon.app.core.openstack-service-api.heat',
             'horizon.app.core.openstack-service-api.glance',
             'horizon.app.core.openstack-service-api.serviceCatalog',
             appCatalogModel
         ]).directive('stars', stars);
 
-    function appCatalogModel($http, heatAPI, glanceAPI, serviceCatalog) {
+    function appCatalogModel($http, $injector, heatAPI, glanceAPI, serviceCatalog) {
         var $scope = this;
         var callbacks = {
             update: [],
@@ -97,6 +99,12 @@
                 callback();
             });
         };
+        var muranoAPI;
+        $scope.has_murano = false;
+        if ($injector.has('horizon.app.core.openstack-service-api.murano')) {
+            muranoAPI = $injector.get('horizon.app.core.openstack-service-api.murano');
+            $scope.has_murano = true;
+        }
 //FIXME [{'name':'heat', 'type':'orchestration'}, {'name':'glance', 'type':'image'}]
         serviceCatalog.get().then(function(catalog){
             angular.forEach(catalog, function(entry){
@@ -156,11 +164,12 @@
         this.register_callback = function(type, callback) {
             callbacks[type].push(callback);
         };
-        this.init = function(app_catalog_url) {
+        this.init = function(app_catalog_settings) {
+            var app_catalog_url = app_catalog_settings.APP_CATALOG_URL;
             var req = {
                 url: app_catalog_url + '/api/v1/assets',
                 headers: {'X-Requested-With': undefined}
-            }
+            };
             $http(req).success(function(data) {
                 if('deprecated' in data) {
                     notify_deprecated(data['deprecated']);
@@ -187,7 +196,10 @@
                     }
                     if (asset.service.type == 'heat') {
                         process(asset);
+                    } else if (asset.service.type == 'murano') {
+                        asset.validated = true;
                     }
+                    asset.has_murano = $scope.has_murano;
                 }
                 $scope.glance_loaded = true;
                 $scope.murano_loaded = true;
@@ -195,6 +207,21 @@
             }).error(function() {
                 notify_error('There was an error while retrieving entries from the Application Catalog.');
             });
+            if($scope.has_murano) {
+                muranoAPI.getPackages().success(function(data) {
+                    $scope.murano_packages = data;
+                    var murano_package_definitions = {};
+                    for (var p in data.packages){
+                        var definitions = data.packages[p]['class_definitions'];
+                        for (var d in definitions) {
+                            var definition = definitions[d];
+                            murano_package_definitions[definition] = {'id': data.packages[p]['id']};
+                        }
+                    }
+                    $scope.murano_package_definitions = murano_package_definitions;
+                    update_found_assets($scope);
+                });
+            }
             glanceAPI.getImages().success(function(data) {
                 $scope.glance_images = data;
                 var glance_names = {}
@@ -300,7 +327,7 @@
         };
     }
 
-    function appComponentCatalogTableCtrl($scope, $http, $timeout, toast, appCatalogModel) {
+    function appComponentCatalogTableCtrl($scope, $http, $timeout, $modal, toast, appCatalogModel) {
         $scope.assets = appCatalogModel.assets_filtered
         var update = function(){
             $timeout(function() {
@@ -308,7 +335,7 @@
             }, 0, false);
         };
         appCatalogModel.register_callback('update', update);
-        common_init($scope, toast, appCatalogModel);
+        common_init($scope, $modal, toast, appCatalogModel);
         $scope.switcher = {pannel: 'component', active: 'list'};
     }
 
@@ -324,6 +351,19 @@
                 if(is_installed){
                     $scope.assets[i].installed_id = $scope.glance_names[name]['id'];
                }
+            }
+        }
+        if('murano_loaded' in $scope && 'murano_package_definitions' in $scope){
+            for (var i in $scope.assets){
+                if($scope.assets[i].service.type != 'murano'){
+                    continue;
+                }
+                var definition = $scope.assets[i].service.package_name;
+                var is_installed = definition in ($scope.murano_package_definitions);
+                $scope.assets[i].installed = is_installed;
+                if(is_installed) {
+                    $scope.assets[i].service.murano_id = $scope.murano_package_definitions[definition]['id'];
+                }
             }
         }
         var asset_name_to_asset = {};
