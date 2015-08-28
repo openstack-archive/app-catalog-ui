@@ -40,6 +40,7 @@
             '$scope',
             '$http',
             '$timeout',
+            '$modal',
             'horizon.framework.widgets.toast.service',
             'appCatalogModel',
             appComponentCatalogTableCtrl
@@ -187,6 +188,11 @@
                     }
                     if (asset.service.type == 'heat') {
                         process(asset);
+                    } else if (asset.service.type == 'murano') {
+//FIXME autodetect.
+                        asset.validated = true;
+                    } else if (asset.service.type == 'bundle') {
+                        console.log(asset);
                     }
                 }
                 $scope.glance_loaded = true;
@@ -300,7 +306,7 @@
         };
     }
 
-    function appComponentCatalogTableCtrl($scope, $http, $timeout, toast, appCatalogModel) {
+    function appComponentCatalogTableCtrl($scope, $http, $timeout, $modal, toast, appCatalogModel) {
         $scope.assets = appCatalogModel.assets_filtered
         var update = function(){
             $timeout(function() {
@@ -308,7 +314,7 @@
             }, 0, false);
         };
         appCatalogModel.register_callback('update', update);
-        common_init($scope, toast, appCatalogModel);
+        common_init($scope, $modal, toast, appCatalogModel);
         $scope.switcher = {pannel: 'component', active: 'list'};
     }
 
