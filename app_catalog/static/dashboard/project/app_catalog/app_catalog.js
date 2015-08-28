@@ -40,6 +40,7 @@
             '$scope',
             '$http',
             '$timeout',
+            '$modal',
             'horizon.framework.widgets.toast.service',
             'appCatalogModel',
             appComponentCatalogTableCtrl
@@ -156,11 +157,13 @@
         this.register_callback = function(type, callback) {
             callbacks[type].push(callback);
         };
-        this.init = function(app_catalog_url) {
+        this.init = function(app_catalog_settings) {
+            var app_catalog_url = app_catalog_settings.APP_CATALOG_URL;
+            $scope.has_murano = app_catalog_settings.HAS_MURANO;
             var req = {
                 url: app_catalog_url + '/api/v1/assets',
                 headers: {'X-Requested-With': undefined}
-            }
+            };
             $http(req).success(function(data) {
                 if('deprecated' in data) {
                     notify_deprecated(data['deprecated']);
@@ -187,7 +190,10 @@
                     }
                     if (asset.service.type == 'heat') {
                         process(asset);
+                    } else if (asset.service.type == 'murano') {
+                        asset.validated = true;
                     }
+                    asset.has_murano = $scope.has_murano;
                 }
                 $scope.glance_loaded = true;
                 $scope.murano_loaded = true;
@@ -300,7 +306,7 @@
         };
     }
 
-    function appComponentCatalogTableCtrl($scope, $http, $timeout, toast, appCatalogModel) {
+    function appComponentCatalogTableCtrl($scope, $http, $timeout, $modal, toast, appCatalogModel) {
         $scope.assets = appCatalogModel.assets_filtered
         var update = function(){
             $timeout(function() {
@@ -308,7 +314,7 @@
             }, 0, false);
         };
         appCatalogModel.register_callback('update', update);
-        common_init($scope, toast, appCatalogModel);
+        common_init($scope, $modal, toast, appCatalogModel);
         $scope.switcher = {pannel: 'component', active: 'list'};
     }
 
