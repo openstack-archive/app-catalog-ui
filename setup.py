@@ -13,29 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(
-    name = 'app-catalog-ui',
-    version = '0.0.1',
-    description = 'OpenStack Application Catalog for OpenStack Dashboard',
-    author = 'Kevin Fox',
-    author_email = 'kevin@efox.cc',
-    classifiers = [
-        'Environment :: OpenStack',
-        'Framework :: Django',
-        'Intended Audience :: Developers',
-        'Intended Audience :: System Administrators',
-        'License :: OSI Approved :: Apache Software License',
-        'Operating System :: OS Independent',
-        'Operating System :: POSIX :: Linux',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
-        'Topic :: Internet :: WWW/HTTP',
-    ],
-    packages=['app_catalog', 'component_catalog'],
-    include_package_data = True,
+    setup_requires=['pbr'],
+    pbr=True,
 )
-
-

@@ -26,7 +26,13 @@ How to try this package
   ../horizon/tools/with_venv.sh pip install --upgrade .
   cp -a enabled/* ../horizon/openstack_dashboard/enabled/
   popd
-  ./run_tests.sh --runserver 127.0.0.1:18000
 
-* For Murano support, you need to patch the murano-dashboard plugin with:
-https://review.openstack.org/#/c/217747/
+  #FOR Murano Dashboard support:
+  git clone http://github.com/openstack/murano-dashboard.git
+  pushd ../murano-dashboard
+  ../horizon/tools/with_venv.sh pip install --upgrade .
+  cp muranodashboard/local/_50_murano.py ../horizon/openstack_dashboard/enabled/
+  popd
+
+  #Start test server
+  ./run_tests.sh --runserver 127.0.0.1:18000
