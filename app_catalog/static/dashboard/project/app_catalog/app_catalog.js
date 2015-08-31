@@ -168,7 +168,15 @@
             var app_catalog_url = app_catalog_settings.APP_CATALOG_URL;
             var req = {
                 url: app_catalog_url + '/api/v1/assets',
-                headers: {'X-Requested-With': undefined}
+                headers: {
+                    'X-Requested-With': undefined,
+                    'X-App-Catalog-Versions': [
+                        app_catalog_settings.HORIZON_VERSION.VER,
+                        app_catalog_settings.HORIZON_VERSION.REL,
+                        app_catalog_settings.APP_CATALOG_VERSION.VER,
+                        app_catalog_settings.APP_CATALOG_VERSION.REL
+                    ].join(' ')
+                }
             };
             $http(req).success(function(data) {
                 if('deprecated' in data) {

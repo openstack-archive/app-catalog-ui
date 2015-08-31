@@ -29,4 +29,4 @@ How to try this package
   ./run_tests.sh --runserver 127.0.0.1:18000
 
 * For Murano support, you need to patch the murano-dashboard plugin with:
-https://review.openstack.org/#/c/217747/
+https://review.openstack.org/#/c/218515/
