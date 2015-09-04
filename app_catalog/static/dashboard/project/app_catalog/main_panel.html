@@ -19,8 +19,20 @@
 </div>
 
 <div ng-switch="switcher.active">
-<!--  <hz-magic-search-bar filter-facets="asset_filter_facets" filter-strings="asset_filter_strings">
-  </hz-magic-search-bar>-->
+  <div class="form-group has-feedback hz-magic-search-bar">
+    <div class="magic-search-bar">
+      <div class="input-group input-group-sm">
+        <span class="input-group-addon">
+          <span class="fa fa-search"></span>
+        </span>
+          <magic-search
+            template="/static/framework/widgets/magic-search/magic-search.html"
+            strings="asset_filter_strings"
+            facets="{$ asset_filter_facets $}">
+          </magic-search>
+      </div>
+    </div>
+  </div>
   <div ng-switch-when="grid" style="
     background-color:#f9f9f9;
     overflow: auto;
@@ -111,6 +123,7 @@
     <table hz-table ng-cloak st-table="dispassets" st-safe-src="assets"
       class="table-striped table-rsp table-detail modern">
       <thead>
+<!--
         <tr>
           <th colspan="4">
     	<st-magic-search>
@@ -119,6 +132,7 @@
     	</st-magic-search>
           </th>
         </tr>
+-->
         <tr>
           <th class="expander"></th>
           <th st-sort="name" st-sort-default="true" class="rsp-p1">Name</th>

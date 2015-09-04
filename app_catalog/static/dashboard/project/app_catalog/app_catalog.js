@@ -101,6 +101,8 @@
         };
         var muranoAPI;
         $scope.has_murano = false;
+        $scope.selected_facets = [];
+        $scope.selected_text = "";
         if ($injector.has('horizon.app.core.openstack-service-api.murano')) {
             muranoAPI = $injector.get('horizon.app.core.openstack-service-api.murano');
             $scope.has_murano = true;
@@ -116,16 +118,52 @@
             $scope.update_assets_filtered();
         });
         this.update_assets_filtered = function(){
+//FIXME this is not ideal...
+            var text_searchable_fields = [
+                ['name'],
+                ['provided_by', 'name'],
+                ['provided_by', 'company'],
+                ['supported_by', 'name'],
+                ['description'],
+                ['license'],
+                ['service', 'type'],
+                ['service', 'container_format'],
+                ['service', 'disk_format'],
+                ['service', 'package_name'],
+                ['service', 'murano_package_name'],
+            ];
             $scope.assets_filtered.length = 0;
             angular.forEach($scope.assets, function(asset){
                 if($scope.service_filters_selections[asset.service.type] == true || asset.service.type == 'bundle'){
-                    var filtered_dep = false;
+                    var filtered_out = false;
                     angular.forEach(asset.depends, function(dep){
                       if($scope.service_filters_selections[dep.asset.service.type] == false){
-                          filtered_dep = true;
+                          filtered_out = true;
                       }
                     });
-                    if(!filtered_dep) {
+                    if($scope.selected_facets.length != 0) {
+                        angular.forEach($scope.selected_facets, function(filter){
+                            var val = filter[0].split('.').reduce(function(obj,i){return obj[i]}, asset);
+                            if(val.toLowerCase().indexOf(filter[1].toLowerCase()) == -1){
+                                filtered_out = true;
+                            }
+                        });
+                    }
+                    if($scope.selected_text != '') {
+                        var found = false;
+                        angular.forEach(text_searchable_fields, function(field){
+                            try {
+                                var val = field.reduce(function(obj,i){return obj[i]}, asset);
+                                if(val.toLowerCase().indexOf($scope.selected_text.toLowerCase()) != -1){
+                                    found = true;
+                                }
+                            } catch(e) {}
+                        });
+                        if(!found) {
+                            filtered_out = true;
+                        }
+                    }
+                    if(!filtered_out) {
                         $scope.assets_filtered.push(asset);
                     }
                 }
@@ -241,6 +279,19 @@
                 update_found_assets($scope);
             });
         };
+        this.update_selected_facets = function(selected_facets) {
+          $scope.selected_facets.length = 0;
+          if(selected_facets != undefined) {
+            for(var i in selected_facets) {
+              $scope.selected_facets.push(selected_facets[i]);
+            }
+          }
+          $scope.update_assets_filtered();
+        }
+        this.update_selected_text = function(selected_text) {
+          $scope.selected_text = selected_text;
+          $scope.update_assets_filtered();
+        }
         this.asset_filter_strings = {
             cancel: gettext('Cancel'),
             prompt: gettext('Search'),
@@ -298,6 +349,23 @@
         appCatalogModel.register_callback('error', error);
         appCatalogModel.register_callback('deprecated', deprecated);
         appCatalogModel.register_callback('retired', retired);
+//FIXME probably belongs in its own directive...
+        var textSearchWatcher = $scope.$on('textSearch', function(event, text) {
+          appCatalogModel.update_selected_text(text);
+
+        });
+        var textSearchWatcher2 = $scope.$on('searchUpdated', function(event, query) {
+          var selected_facets = undefined;
+          if(query != '') {
+            selected_facets = query.split('&');
+            for(var i = 0; i < selected_facets.length; i++){
+             var s = selected_facets[i];
+             var idx = s.indexOf('=');
+             selected_facets[i] = [s.slice(0, idx), s.slice(idx + 1)];
+            }
+          }
+          appCatalogModel.update_selected_facets(selected_facets);
+        });
     }
 
     function appCatalogTableCtrl($scope, $http, $timeout, $modal, toast, appCatalogModel) {
@@ -311,10 +379,6 @@
                 }
             }
         };
-//FIXME remove. probably belongs in its own directive...
-//        var textSearchWatcher = $scope.$on('textSearch', function(event, text) {
-//          console.log(text);
-//        });
         appCatalogModel.register_callback('update', update);
         common_init($scope, $modal, toast, appCatalogModel);
         $scope.switcher = {pannel: 'app', active: 'grid'};
