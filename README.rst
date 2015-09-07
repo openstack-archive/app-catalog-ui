@@ -34,5 +34,8 @@ How to try this package
   cp muranodashboard/local/_50_murano.py ../horizon/openstack_dashboard/enabled/
   popd
 
+  #If you want to test against you own app-catalog checkout:
+  echo "APP_CATALOG_URL='http://localhost:18001'" >> openstack_dashboard/local/local_settings.py
+
   #Start test server
   ./run_tests.sh --runserver 127.0.0.1:18000
