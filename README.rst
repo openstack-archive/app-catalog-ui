@@ -20,6 +20,7 @@ With Devstack
 Add the following to your Devstack local.conf file
 
 ::
+
   enable_plugin app-catalog-ui https://git.openstack.org/stackforge/apps-catalog-ui
 
 With Horizon
