@@ -25,10 +25,12 @@
         }).directive('appAction', function () {
             return {
                 restrict: 'EA',
-//FIXME static
-                templateUrl: '/static/dashboard/project/app_catalog/action.html'
+                templateUrl: STATIC_URL + 'dashboard/project/app_catalog/action.html'
             };
-        }).controller('appCatalogTableCtrl', [
+        }).directive('appCatalogMagicSearch', [
+            'horizon.framework.widgets.basePath',
+             appCatalogMagicSearchBar
+        ]).controller('appCatalogTableCtrl', [
             '$scope',
             '$http',
             '$timeout',
@@ -321,8 +323,8 @@
           singleton: true
         }];
     }
-
     function common_init($scope, $modal, toast, appCatalogModel) {
+        $scope.STATIC_URL = STATIC_URL;
         $scope.toggle_service_filter = appCatalogModel.toggle_service_filter;
         $scope.service_filters = appCatalogModel.service_filters;
         $scope.service_filters_selections = appCatalogModel.service_filters_selections;
@@ -333,7 +335,7 @@
         var retired = function(){
             var newscope = $scope.$new();
             var modal = $modal.open({
-                templateUrl: "/static/dashboard/project/app_catalog/retired_panel.html",
+                templateUrl: STATIC_URL + "dashboard/project/app_catalog/retired_panel.html",
                 scope: newscope
             });
             newscope.cancel = function() {
@@ -367,6 +369,23 @@
           appCatalogModel.update_selected_facets(selected_facets);
         });
     }
+    function appCatalogMagicSearchBar(basePath) {
+      var directive = {
+        compile: function (element, attrs) {
+          /**
+           * Need to set template here since MagicSearch template
+           * attribute is not interpolated. Can't hardcode the
+           * template location and need to use basePath.
+           */
+          var templateUrl = basePath + 'magic-search/magic-search.html';
+          element.find('magic-search').attr('template', templateUrl);
+          element.addClass('hz-magic-search-bar');
+        },
+        restrict: 'E',
+        templateUrl: STATIC_URL + "dashboard/project/app_catalog/magic_search.html",
+      };
+      return directive;
+    }
 
     function appCatalogTableCtrl($scope, $http, $timeout, $modal, toast, appCatalogModel) {
         $scope.assets = []
@@ -389,8 +408,7 @@
             var newscope = $scope.$new();
             newscope.asset = asset;
             var modal = $modal.open({
-//FIXME static from where?
-                templateUrl: "/static/dashboard/project/app_catalog/details_panel.html",
+                templateUrl: STATIC_URL + "dashboard/project/app_catalog/details_panel.html",
                 scope: newscope
             });
             newscope.cancel = function() {

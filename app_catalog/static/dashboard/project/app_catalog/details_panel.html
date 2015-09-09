@@ -3,8 +3,7 @@
         <h3 class="modal-title">Details</h3>
     </div>
     <div class="modal-body">
-<!--FIXME static -->
-      <ng-include src="'/static/dashboard/project/app_catalog/_details_panel.html'" onload="appaction=true"></ng-include>
+      <ng-include src="STATIC_URL + 'dashboard/project/app_catalog/_details_panel.html'" onload="appaction=true"></ng-include>
     </div>
     <div class="modal-footer">
       <button class="btn btn-default" ng-click="cancel()">Close</button>
