@@ -15,6 +15,16 @@ apps-catalog-ui is intended to use only on systems running Horizon
 How to try this package
 =======================
 
+With Devstack
+-------------
+Add the following to your Devstack local.conf file
+
+::
+  enable_plugin app-catalog-ui https://git.openstack.org/stackforge/apps-catalog-ui
+
+With Horizon
+------------
+
 ::
 
   git clone http://github.com/openstack/horizon.git
