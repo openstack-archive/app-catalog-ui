@@ -39,7 +39,7 @@
   	  <td>{$ dep.name $}</td>
   	  <td ng-switch="dep.asset.installed">
   	    <a ng-switch-default class="btn btn-default btn-sm disabled ajax-modal" href="/}">Checking</a>
-  	    <a ng-switch-when="false" class="btn btn-default btn-sm ajax-modal" href="/project/images/create/?name={$ dep.asset.name | encodeURIComponent $}&source_type=url&image_url={$ dep.asset.attributes.url | encodeURIComponent $}&disk_format={$ dep.asset.service.disk_format $}&architecture={$ dep.asset.service.architecture $}&minimum_disk={$ dep.asset.service.min_disk $}&minimum_ram={$ dep.asset.service.min_ram $}&description={$ dep.asset.description $}">Install</a>
+  	    <a ng-switch-when="false" class="btn btn-default btn-sm ajax-modal" href="{$ WEBROOT $}project/images/create/?name={$ dep.asset.name | encodeURIComponent $}&source_type=url&image_url={$ dep.asset.attributes.url | encodeURIComponent $}&disk_format={$ dep.asset.service.disk_format $}&architecture={$ dep.asset.service.architecture $}&minimum_disk={$ dep.asset.service.min_disk $}&minimum_ram={$ dep.asset.service.min_ram $}&description={$ dep.asset.description $}">Install</a>
   	    <a ng-switch-when="true" class="btn ntn-default btn-sm disbled">Installed</a>
   	  </td>
   	</tr>
