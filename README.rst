@@ -2,7 +2,7 @@
 apps-catalog-ui
 ===============
 
-This makes the Appications and Components stored in the OpenStack Application
+This makes the Applications and Components stored in the OpenStack Application
 Catalog available to users in their own Cloud's Horizon UI.
 
 
