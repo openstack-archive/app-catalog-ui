@@ -1,0 +1,8 @@
+Verified+2: Jenkins
+Code-Review+2: Christopher Aedo <doc@aedo.net>
+Workflow+1: Christopher Aedo <doc@aedo.net>
+Submitted-by: Jenkins
+Submitted-at: Sat, 12 Sep 2015 00:33:20 +0000
+Reviewed-on: https://review.openstack.org/222823
+Project: openstack/app-catalog-ui
+Branch: refs/heads/master
