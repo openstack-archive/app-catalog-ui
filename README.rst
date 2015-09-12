@@ -1,6 +1,6 @@
-===============
-apps-catalog-ui
-===============
+==============
+app-catalog-ui
+==============
 
 This makes the Applications and Components stored in the OpenStack Application
 Catalog available to users in their own Cloud's Horizon UI.
@@ -9,7 +9,7 @@ Catalog available to users in their own Cloud's Horizon UI.
 Requirements
 ============
 
-apps-catalog-ui is intended to use only on systems running Horizon
+app-catalog-ui is intended to use only on systems running Horizon
 
 
 How to try this package
@@ -21,7 +21,7 @@ Add the following to your Devstack local.conf file
 
 ::
 
-  enable_plugin app-catalog-ui https://git.openstack.org/stackforge/apps-catalog-ui
+  enable_plugin app-catalog-ui https://git.openstack.org/openstack/app-catalog-ui
 
 With Horizon
 ------------
@@ -29,7 +29,7 @@ With Horizon
 ::
 
   git clone http://github.com/openstack/horizon.git
-  git clone http://github.com/stackforge/apps-catalog-ui.git
+  git clone http://github.com/openstack/app-catalog-ui.git
   cd horizon
   ./run_tests.sh -f --docs
   cp ./openstack_dashboard/local/local_settings.py.example ./openstack_dashboard/local/local_settings.py
