@@ -27,7 +27,7 @@ class IndexView(views.APIView):
                 'VER': acvi.version_string(),
                 'REL': acvi.release_string()
             },
-            'APP_CATALOG_URL': getattr(settings, 'APP_CATALOG_URL', 'http://apps.openstack.org')
+            'APP_CATALOG_URL': getattr(settings, 'APP_CATALOG_URL', '//apps.openstack.org')
         }
         context['APP_CATALOG_SETTINGS'] = json.dumps(app_catalog_settings)
         return context
