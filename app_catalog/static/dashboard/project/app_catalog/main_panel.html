@@ -54,7 +54,7 @@
               " src="{$ asset.icon.url $}">
           
           </div>
-<!--FIXME Share images locally to the plugin.-->
+<!--FIXME Move images out to common repo.-->
           <span style="
             max-height: 100%;
             width: 23px;
@@ -62,7 +62,7 @@
             top: 0;
             right: 0;
             position: absolute;
-            background: rgba(0, 0, 0, 0) url('http://apps.openstack.org/static/images/featured-corner-{$ asset.service.type $}.png') no-repeat scroll right top;
+            background: rgba(0, 0, 0, 0) url('{$ STATIC_URL $}dashboard/project/app_catalog/featured-corner-{$ asset.service.type $}.png') no-repeat scroll right top;
             ">
           </span>
         </div>
