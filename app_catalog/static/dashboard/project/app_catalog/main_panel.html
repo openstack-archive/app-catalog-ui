@@ -40,66 +40,70 @@
         position: relative;
         ">
         <div style="">
-  	<div style="
-  	  width:128px;
-  	  height:128px;
-  	  overflow: hidden;
-  	  margin-left: auto; margin-right:auto;
-  	  ">
-     
-  	  <img style="
-  	    margin: {$ asset.icon.top $}px 0px 0px {$ asset.icon.left $}px;
-  	    height: {$ asset.icon.height $}px;
-  	    " src="{$ asset.icon.url $}">
-     
-  	</div>
+
+          <div style="
+            width:128px;
+            height:128px;
+            overflow: hidden;
+            margin-left: auto; margin-right:auto;
+            ">
+
+            <img style="
+              margin: {$ asset.icon.top $}px 0px 0px {$ asset.icon.left $}px;
+              height: {$ asset.icon.height $}px;
+              " src="{$ asset.icon.url $}">
+          
+          </div>
 <!--FIXME Share images locally to the plugin.-->
-  	<span style="
-  	  max-height: 100%;
-  	  width: 23px;
-  	  height: 23px;
-  	  top: 0;
-  	  right: 0;
-  	  position: absolute;
-  	  background: rgba(0, 0, 0, 0) url('http://apps.openstack.org/static/images/featured-corner-{$ asset.service.type $}.png') no-repeat scroll right top;
-  	  ">
-  	</span>
+          <span style="
+            max-height: 100%;
+            width: 23px;
+            height: 23px;
+            top: 0;
+            right: 0;
+            position: absolute;
+            background: rgba(0, 0, 0, 0) url('http://apps.openstack.org/static/images/featured-corner-{$ asset.service.type $}.png') no-repeat scroll right top;
+            ">
+          </span>
         </div>
         <div title="{$ asset.name $}" style="
-  	overflow: hidden;
-  	white-space: nowrap;
-  	position: relative;
-  	line-height: 18px;
-  	font-size: 16px;
-  	"> {$ asset.name $}
-  	<span style="
-  	  max-height: 100%;
-  	  width: 40px;
-  	  height: 20px;
-  	  bottom: 0;
-  	  right: 0;
-  	  position: absolute;
-  	  background: rgba(0, 0, 0, 0) linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1)) repeat scroll 0 0;
-  	  ">
-  	</span>
+          overflow: hidden;
+          white-space: nowrap;
+          position: relative;
+          line-height: 18px;
+          font-size: 16px;
+          "> {$ asset.name $}
+          <span style="
+            max-height: 100%;
+            width: 40px;
+            height: 20px;
+            bottom: 0;
+            right: 0;
+            position: absolute;
+            background: rgba(0, 0, 0, 0) linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1)) repeat scroll 0 0;
+            ">
+          </span>
         </div>
         <div title="{$ asset.provided_by.name $}" style="
-  	overflow: hidden;
-  	white-space: nowrap;
-  	position: relative;
-  	line-height: 14px;
-  	font-size: 12px;
-  	"> {$ asset.provided_by.name $}
-  	<span style="
-  	  max-height: 100%;
-  	  width: 40px;
-  	  height: 20px;
-  	  bottom: 0;
-  	  right: 0;
-  	  position: absolute;
-  	  background: rgba(0, 0, 0, 0) linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1)) repeat scroll 0 0;
-  	  ">
-  	</span>
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+            line-height: 14px;
+            font-size: 12px;
+            "> {$ asset.provided_by.name $}
+          <span style="
+              max-height: 100%;
+              width: 40px;
+              height: 20px;
+              bottom: 0;
+              right: 0;
+              position: absolute;
+              background: rgba(0, 0, 0, 0) linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1)) repeat scroll 0 0;
+              ">
+          </span>
+        </div>
+        <div ng-switch="asset.disabled">
+          <div ng-switch-when="true" class="app_catalog_grid_item_hidden"></div>
         </div>
       </div>
     </div>
@@ -109,16 +113,6 @@
     <table hz-table ng-cloak st-table="dispassets" st-safe-src="assets"
       class="table-striped table-rsp table-detail modern">
       <thead>
-<!--
-        <tr>
-          <th colspan="4">
-    	<st-magic-search>
-    	  <hz-magic-search-bar filter-facets="asset_filter_facets" filter-strings="asset_filter_strings">
-    	  </hz-magic-search-bar>
-    	</st-magic-search>
-          </th>
-        </tr>
--->
         <tr>
           <th class="expander"></th>
           <th st-sort="name" st-sort-default="true" class="rsp-p1">Name</th>
@@ -130,7 +124,7 @@
       <tbody>
         <tr ng-repeat-start="asset in dispassets track by asset.name">
           <td class="expander">
-    	    <i class="fa fa-chevron-right" hz-expand-detail duration="200"></i>
+            <i class="fa fa-chevron-right" hz-expand-detail duration="200"></i>
           </td>
           <td class="rsp-p1">{$ asset.name $}</td>
           <td class="rsp-p2">{$ asset.license $}</td>
@@ -148,7 +142,7 @@
       <tfoot>
         <tr>
           <td colspan="5" class="text-center">
-    	<div st-pagination="" st-items-by-page="itemsByPage" st-displayed-pages="7"></div>
+            <div st-pagination="" st-items-by-page="itemsByPage" st-displayed-pages="7"></div>
           </td>
         </tr>
       </tfoot>

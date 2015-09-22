@@ -233,6 +233,7 @@
             notify_update();
           }).error(function(data, status) {
             var str = 'ERROR: Could not retrieve template:';
+            asset.disabled = true;
             asset.validated = 'unsupported';
             if (status == 400 && data.slice(0, str.length) == str) {
               asset.validated = 'error';
@@ -247,6 +248,9 @@
             process(asset);
           } else if (asset.service.type == 'murano') {
             asset.validated = true;
+            asset.disabled = !$scope.has_murano;
+          } else if (asset.service.type != 'glance' && asset.service.type != 'bundle') {
+            asset.disabled = true;
           }
           asset.has_murano = $scope.has_murano;
         }

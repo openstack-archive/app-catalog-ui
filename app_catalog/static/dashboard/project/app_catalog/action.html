@@ -30,5 +30,9 @@
         <a ng-switch-default ng-class="extraclasses" class="btn btn-primary btn-default ajax-modal" href="{$ WEBROOT $}murano/packages/import_bundle?name={$ asset.service.murano_package_name | encodeURIComponent $}&import_type=by_repo">Install</a>
         <a ng-switch-when="true" ng-class="extraclasses" class="btn btn-default disabled ajax-modal" href="/">Installed</a>
       </div>
+    </div>
+  </div>
+  <div ng-switch-default>
+    <a ng-switch-when="false" ng-class="extraclasses" class="btn btn-default disabled ajax-modal" href="/">Unsupported</a>
   </div>
 </div>
