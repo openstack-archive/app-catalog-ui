@@ -81,22 +81,22 @@
       'glance':false,
       'murano':false
     };
-    var notify_update = function() {
+    var notifyUpdate = function() {
       angular.forEach(callbacks.update, function(callback) {
         callback();
       });
     };
-    var notify_error = function(message) {
+    var notifyError = function(message) {
       angular.forEach(callbacks.error, function(callback) {
         callback(message);
       });
     };
-    var notify_deprecated = function(message) {
+    var notifyDeprecated = function(message) {
       angular.forEach(callbacks.deprecated, function(callback) {
         callback(message);
       });
     };
-    var notify_retired = function() {
+    var notifyRetired = function() {
       angular.forEach(callbacks.retired, function(callback) {
         callback();
       });
@@ -121,7 +121,7 @@
     });
     this.update_assets_filtered = function() {
 //FIXME this is not ideal...
-      var text_searchable_fields = [
+      var textSearchableFields = [
         ['name'],
         ['provided_by', 'name'],
         ['provided_by', 'company'],
@@ -154,7 +154,7 @@
           }
           if ($scope.selected_text != '') {
             var found = false;
-            angular.forEach(text_searchable_fields, function(field) {
+            angular.forEach(textSearchableFields, function(field) {
               try {
                 var val = field.reduce(function(obj,i) {return obj[i];}, asset);
                 if (val.toLowerCase().indexOf($scope.selected_text.toLowerCase()) != -1) {
@@ -179,58 +179,58 @@
       var map = {'heat': 'Orchestration', 'glance': 'Images'};
       var options = [];
 
-      for (var type in types) {
+      angular.forEach(types, function(type) {
         if (type in map) {
           options.push({'key':type, 'label':map[type]});
         }
-      }
+      });
       angular.forEach($scope.asset_filter_facets, function(facet) {
         if (facet.name == 'service.type') {
 //FIXME Doesn't seem to work currently
 //                    facet['options'] = options;
         }
       });
-      notify_update();
+      notifyUpdate();
     };
-    this.toggle_service_filter = function(service_name) {
-      var value = $scope.service_filters_selections[service_name];
+    this.toggle_service_filter = function(serviceName) {
+      var value = $scope.service_filters_selections[serviceName];
       if (value) {
         value = false;
       } else {
         value = true;
       }
-      $scope.service_filters_selections[service_name] = value;
+      $scope.service_filters_selections[serviceName] = value;
       $scope.update_assets_filtered();
     };
     this.register_callback = function(type, callback) {
       callbacks[type].push(callback);
     };
-    this.init = function(app_catalog_settings) {
-      var app_catalog_url = app_catalog_settings.APP_CATALOG_URL;
+    this.init = function(appCatalogSettings) {
+      var appCatalogUrl = appCatalogSettings.APP_CATALOG_URL;
       var req = {
-        url: app_catalog_url + '/api/v1/assets',
+        url: appCatalogUrl + '/api/v1/assets',
         headers: {
           'X-Requested-With': undefined,
           'X-App-Catalog-Versions': [
-            app_catalog_settings.HORIZON_VERSION.VER,
-            app_catalog_settings.HORIZON_VERSION.REL,
-            app_catalog_settings.APP_CATALOG_VERSION.VER,
-            app_catalog_settings.APP_CATALOG_VERSION.REL
+            appCatalogSettings.HORIZON_VERSION.VER,
+            appCatalogSettings.HORIZON_VERSION.REL,
+            appCatalogSettings.APP_CATALOG_VERSION.VER,
+            appCatalogSettings.APP_CATALOG_VERSION.REL
           ].join(' ')
         }
       };
       $http(req).success(function(data) {
         if ('deprecated' in data) {
-          notify_deprecated(data.deprecated);
+          notifyDeprecated(data.deprecated);
         }
         if ('retired' in data) {
-          notify_retired();
+          notifyRetired();
         }
         var process = function(asset) {
           var url = asset.attributes.url;
           heatAPI.validate({'template_url': url}, true).success(function(data) {
             asset.validated = true;
-            notify_update();
+            notifyUpdate();
           }).error(function(data, status) {
             var str = 'ERROR: Could not retrieve template:';
             asset.disabled = true;
@@ -238,11 +238,10 @@
             if (status == 400 && data.slice(0, str.length) == str) {
               asset.validated = 'error';
             }
-            notify_update();
+            notifyUpdate();
           });
         };
-        for (var i in data.assets) {
-          var asset = data.assets[i];
+        angular.forEach(data.assets, function(asset) {
           $scope.assets.push(asset);
           if (asset.service.type == 'heat') {
             process(asset);
@@ -253,50 +252,48 @@
             asset.disabled = true;
           }
           asset.has_murano = $scope.has_murano;
-        }
+        });
         $scope.glance_loaded = true;
         $scope.murano_loaded = true;
-        update_found_assets($scope);
+        updateFoundAssets($scope);
       }).error(function() {
-        notify_error('There was an error while retrieving entries from the Application Catalog.');
+        notifyError('There was an error while retrieving entries from the Application Catalog.');
       });
       if ($scope.has_murano) {
         muranoAPI.getPackages().success(function(data) {
           $scope.murano_packages = data;
-          var murano_package_definitions = {};
-          for (var p in data.packages) {
-            var definitions = data.packages[p].class_definitions;
-            for (var d in definitions) {
-              var definition = definitions[d];
-              murano_package_definitions[definition] = {'id': data.packages[p].id};
-            }
-          }
-          $scope.murano_package_definitions = murano_package_definitions;
-          update_found_assets($scope);
+          var muranoPackageDefinitions = {};
+          var d;
+          angular.forEach(data.packages, function(pkg) {
+            angular.forEach(definitions, function(definition) {
+              muranoPackageDefinitions[definition] = {'id': pkg.id};
+            });
+          });
+          $scope.murano_package_definitions = muranoPackageDefinitions;
+          updateFoundAssets($scope);
         });
       }
       glanceAPI.getImages().success(function(data) {
         $scope.glance_images = data;
-        var glance_names = {};
-        for (var i in data.items) {
-          var name = data.items[i].name;
-          glance_names[name] = {'id': data.items[i].id};
-        }
-        $scope.glance_names = glance_names;
-        update_found_assets($scope);
+        var glanceNames = {};
+        angular.forEach(data.items, function(item) {
+          glanceNames[item.name] = {'id': item.id};
+        });
+        $scope.glance_names = glanceNames;
+        updateFoundAssets($scope);
       });
     };
-    this.update_selected_facets = function(selected_facets) {
+    this.update_selected_facets = function(selectedFacets) {
       $scope.selected_facets.length = 0;
-      if (selected_facets != undefined) {
-        for (var i in selected_facets) {
-          $scope.selected_facets.push(selected_facets[i]);
-        }
+      if (selectedFacets != undefined) {
+        angular.forEach(selectedFacets, function(facet) {
+          $scope.selected_facets.push(facet);
+        });
       }
       $scope.update_assets_filtered();
     };
-    this.update_selected_text = function(selected_text) {
-      $scope.selected_text = selected_text;
+    this.update_selected_text = function(selectedText) {
+      $scope.selected_text = selectedText;
       $scope.update_assets_filtered();
     };
     this.asset_filter_strings = {
@@ -363,16 +360,16 @@
 
     });
     var textSearchWatcher2 = $scope.$on('searchUpdated', function(event, query) {
-      var selected_facets = undefined;
+      var selectedFacets;
       if (query != '') {
-        selected_facets = query.split('&');
-        for (var i = 0; i < selected_facets.length; i++) {
-          var s = selected_facets[i];
+        selectedFacets = query.split('&');
+        for (var i = 0; i < selectedFacets.length; i++) {
+          var s = selectedFacets[i];
           var idx = s.indexOf('=');
-          selected_facets[i] = [s.slice(0, idx), s.slice(idx + 1)];
+          selectedFacets[i] = [s.slice(0, idx), s.slice(idx + 1)];
         }
       }
-      appCatalogModel.update_selected_facets(selected_facets);
+      appCatalogModel.update_selected_facets(selectedFacets);
     });
   }
   function appCatalogMagicSearchBar(basePath) {
@@ -397,12 +394,11 @@
     $scope.assets = [];
     var update = function() {
       $scope.assets = [];
-      for (var i in appCatalogModel.assets_filtered) {
-        var asset = appCatalogModel.assets_filtered[i];
+      angular.forEach(appCatalogModel.assets_filtered, function(asset) {
         if (typeof asset.tags !== "undefined" && asset.tags.indexOf('app') > -1) {
           $scope.assets.push(asset);
         }
-      }
+      });
     };
     appCatalogModel.register_callback('update', update);
     commonInit($scope, $modal, toast, appCatalogModel);
@@ -435,7 +431,7 @@
     $scope.switcher = {pannel: 'component', active: 'list'};
   }
 
-  function update_found_assets($scope) {
+  function updateFoundAssets($scope) {
     var i;
     if ('glance_loaded' in $scope && 'glance_names' in $scope) {
       for (i in $scope.assets) {
@@ -443,9 +439,9 @@
           continue;
         }
         var name = $scope.assets[i].name;
-        var is_installed = name in $scope.glance_names;
-        $scope.assets[i].installed = is_installed;
-        if (is_installed) {
+        var isInstalled = name in $scope.glance_names;
+        $scope.assets[i].installed = isInstalled;
+        if (isInstalled) {
           $scope.assets[i].installed_id = $scope.glance_names[name].id;
         }
       }
@@ -456,21 +452,21 @@
           continue;
         }
         var definition = $scope.assets[i].service.package_name;
-        var is_installed = definition in ($scope.murano_package_definitions);
-        $scope.assets[i].installed = is_installed;
-        if (is_installed) {
+        var isInstalled = definition in ($scope.murano_package_definitions);
+        $scope.assets[i].installed = isInstalled;
+        if (isInstalled) {
           $scope.assets[i].service.murano_id = $scope.murano_package_definitions[definition].id;
         }
       }
     }
-    var asset_name_to_asset = {};
+    var assetNameToAsset = {};
     angular.forEach($scope.assets, function(asset) {
-      asset_name_to_asset[asset.name] = asset;
+      assetNameToAsset[asset.name] = asset;
     });
     angular.forEach($scope.assets, function(asset) {
       if ('depends' in asset) {
         angular.forEach(asset.depends, function(dep) {
-          dep.asset = asset_name_to_asset[dep.name];
+          dep.asset = assetNameToAsset[dep.name];
         });
       }
     });
