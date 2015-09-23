@@ -243,7 +243,9 @@
         };
         angular.forEach(data.assets, function(asset) {
           $scope.assets.push(asset);
-          if (asset.service.type == 'heat') {
+          if ('version' in asset.service && asset.service.version > 1) {
+            asset.disabled = true;
+          } else if (asset.service.type == 'heat') {
             process(asset);
           } else if (asset.service.type == 'murano') {
             asset.validated = true;
