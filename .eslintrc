@@ -1,0 +1,17 @@
+# Set up globals
+globals:
+  angular: false
+
+extends: openstack
+
+# Most environment options are not explicitly enabled or disabled, only
+# included here for completeness' sake. They are commented out, because the
+# global updates.py script would otherwise override them during a global
+# requirements synchronization.
+#
+# Individual projects should choose which platforms they deploy to.
+
+env:
+  # browser global variables.
+  browser: true
+

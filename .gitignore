@@ -1,0 +1,8 @@
+# python/tox
+.eggs/
+AUTHORS
+ChangeLog
+
+# npm
+node_modules/
+npm-debug.log

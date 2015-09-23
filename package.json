@@ -1,0 +1,17 @@
+{
+  "version": "0.0.0",
+  "private": true,
+  "name": "app-catalog",
+  "description": "OpenStack App Catalog UI",
+  "repository": "none",
+  "license": "Apache 2.0",
+  "devDependencies": {
+    "eslint": "^0.23.0",
+    "eslint-config-openstack": "1.2.0",
+    "eslint-plugin-angular": "0.0.10"
+  },
+  "scripts": {
+    "lint": "eslint --no-color app_catalog/static/"
+  },
+  "dependencies": {}
+}
