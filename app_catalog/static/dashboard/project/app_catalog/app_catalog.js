@@ -228,7 +228,11 @@
         }
         var process = function(asset) {
           var url = asset.attributes.url;
-          heatAPI.validate({'template_url': url}, true).success(function(data) {
+          var args = {'template_url': url};
+          if ('environment' in asset.service ) {
+            args['environment'] = asset.service.environment;
+          }
+          heatAPI.validate(args, true).success(function(data) {
             asset.validated = true;
             notifyUpdate();
           }).error(function(data, status) {

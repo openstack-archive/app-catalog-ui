@@ -7,7 +7,10 @@
       <a ng-switch-default ng-class="extraclasses" class="btn btn-default disabled ajax-modal" href="/}">Checking</a>
       <a ng-switch-when="error" ng-class="extraclasses" class="btn btn-default disabled ajax-modal" href="/">Error</a>
       <a ng-switch-when="unsupported" ng-class="extraclasses" class="btn btn-default disabled ajax-modal" href="/">Unsupported</a>
-      <a ng-switch-when="true" ng-class="extraclasses" class="btn btn-success btn-default ajax-modal" href="{$ WEBROOT $}project/stacks/select_template?template_source=url&template_url={$ asset.attributes.url | encodeURIComponent $}">Launch</a>
+      <div ng-switch-when="true" ng-switch="asset.service.environment || '_undefined_'">
+        <a ng-switch-when="_undefined_" ng-class="extraclasses" class="btn btn-success btn-default ajax-modal" href="{$ WEBROOT $}project/stacks/select_template?template_source=url&template_url={$ asset.attributes.url | encodeURIComponent $}">Launch</a>
+        <a ng-switch-default ng-class="extraclasses" class="btn btn-success btn-default ajax-modal" href="{$ WEBROOT $}project/stacks/select_template?template_source=url&template_url={$ asset.attributes.url | encodeURIComponent $}&environment_source=raw&environment_data={$ asset.service.environment | encodeURIComponent $}">Launch</a>
+      </div>
     </div>
     <div ng-switch-when="glance" ng-switch="asset.attributes.indirect_url || '_undefined_'">
       <a ng-switch-default ng-class="extraclasses" class="btn btn-primary btn-default" target="_blank" href="{$ asset.attributes.indirect_url $}">Install Instructions</a>
