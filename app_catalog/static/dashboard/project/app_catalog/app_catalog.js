@@ -205,8 +205,64 @@
     this.register_callback = function(type, callback) {
       callbacks[type].push(callback);
     };
+    var semver_compare = function(a, b) {
+      var v = a[0] - b[0]
+      if (v === 0) {
+        v = a[1] - b[1];
+        if (v === 0) {
+          v = a[2] - b[2];
+        }
+      }
+      return v;
+    };
+    $scope.eversion_check = function(asset, version) {
+      if (!( 'ever' in asset.service)) {
+        return true;
+      }
+      var matched = false;
+      angular.forEach(asset.service.ever, function(ever) {
+        var has_min = 'min' in ever;
+        var has_max = 'max' in ever;
+        if(has_max && has_min) {
+          if (semver_compare(ever.min, version) <= 0 &&
+              semver_compare(version, ever.max) <= 0) {
+            matched = true;
+          }
+        } else if (has_max) {
+          if (semver_compare(version, ever.max) <= 0) {
+            matched = true;
+          }
+        } else if (has_min) {
+          if (semver_compare(ever.min, version) <= 0) {
+            matched = true;
+          }
+        }
+      });
+      return matched;
+    };
     this.init = function(appCatalogSettings) {
+//FIXME move this to a test file.
+//      test_evars($scope);
+      var tver = appCatalogSettings.APP_CATALOG_VERSION.VER;
+      var defaultVersion = [2015, 2, 0]; //Mitaka
+      if (tver.indexOf('8.') === 0) {
+        defaultVersion = [2015,1,0]; //Liberty
+      }
       var appCatalogUrl = appCatalogSettings.APP_CATALOG_URL;
+      $scope.heat_release = appCatalogSettings.HEAT_VERSION.REL;
+      $scope.heat_version = appCatalogSettings.HEAT_VERSION.VER;
+      if($scope.heat_version) {
+        $scope.heat_version = $scope.heat_version.split('.', 3).map(Number);
+      } else {
+        $scope.heat_version = defaultVersion;
+      }
+      $scope.murano_release = appCatalogSettings.MURANO_VERSION.REL;
+      $scope.murano_version = appCatalogSettings.MURANO_VERSION.VER;
+      if($scope.murano_version) {
+        $scope.murano_version = $scope.murano_version.split('.', 3).map(Number);
+      } else {
+        $scope.murano_version = defaultVersion;
+      }
       var req = {
         url: appCatalogUrl + '/api/v1/assets',
         headers: {
@@ -229,6 +285,11 @@
         var process = function(asset) {
           var url = asset.attributes.url;
           var args = {'template_url': url};
+          if ($scope.eversion_check(asset, $scope.heat_version) != true) {
+            asset.disabled = true;
+            notifyUpdate();
+            return;
+          }
           if ('environment' in asset.service ) {
             args['environment'] = asset.service.environment;
           }
@@ -254,6 +315,9 @@
           } else if (asset.service.type == 'murano') {
             asset.validated = true;
             asset.disabled = !$scope.has_murano;
+            if ($scope.eversion_check(asset, $scope.murano_version) != true) {
+              asset.disabled = true;
+            }
           } else if (asset.service.type != 'glance' && asset.service.type != 'bundle') {
             asset.disabled = true;
           }
@@ -491,6 +555,25 @@
         }
       }
     };
+  }
+
+/*FIXME move out to testing file.*/
+  function test_evars($scope) {
+    var assert = function(t, a, b) {
+      if (!t) {
+        console.log("Failed", a, b);
+      }
+    }
+    assert($scope.eversion_check({service:{}}, [2014,1,1]), [], [2014,1,1]);
+    assert($scope.eversion_check({service:{ever:[{min:[2014,1,1]}]}}, [2014,1,1]), [2014,1,1], [2014,1,1]);
+    assert($scope.eversion_check({service:{ever:[{max:[2014,1,1]}]}}, [2014,1,1]), [2014,1,1], [2014,1,1]);
+    assert(!$scope.eversion_check({service:{ever:[{max:[2014,1,1]}]}}, [2015,1,1]), [2014,1,1], [2015,1,1]);
+    assert($scope.eversion_check({service:{ever:[{max:[2014,1,1]}]}}, [2013,1,1]), [2014,1,1], [2013,1,1]);
+    assert(!$scope.eversion_check({service:{ever:[{min:[2016,1,1]}]}}, [2015,1,1]), [2016,1,1], [2015,1,1]);
+    assert($scope.eversion_check({service:{ever:[{min:[2013,1,1]}]}}, [2014,1,1]), [2013,1,1], [2014,1,1]);
+    assert($scope.eversion_check({service:{ever:[{min:[2013,1,1],max:[2015,1,1]}]}}, [2014,1,1]), [2013,2015], [2014,1,1]);
+    assert(!$scope.eversion_check({service:{ever:[{min:[2013,1,1],max:[2015,1,1]}]}}, [2011,1,1]), [2013,2015], [2011,1,1]);
+    assert(!$scope.eversion_check({service:{ever:[{min:[2013,1,1],max:[2015,1,1]}]}}, [2016,1,1]), [2013,2015], [2016,1,1]);
   }
 
 })();
