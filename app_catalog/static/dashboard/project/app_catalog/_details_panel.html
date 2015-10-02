@@ -16,7 +16,7 @@
       <div>{$ asset.name $}</div>
       <div>{$ asset.provided_by.company $}</div>
       <div ng-switch="appaction" style="float:right">
-        <div ng-switch-when='true' app-action ng-scope ng-init='extraclasses="btn-lg"'></div>
+        <div ng-switch-when='true' app-action ng-scope ng-init='extraclasses="btn-lg";installclasses="btn-primary";launchclasses="btn-success"'></div>
       </div>
 
     </dd>
@@ -36,12 +36,9 @@
       <div ng-switch-default>
         <table>
   	<tr ng-repeat="dep in asset.depends">
-  	  <td>{$ dep.name $}</td>
-  	  <td ng-switch="dep.asset.installed">
-  	    <a ng-switch-default class="btn btn-default btn-sm disabled ajax-modal" href="/}">Checking</a>
-  	    <a ng-switch-when="false" class="btn btn-default btn-sm ajax-modal" href="{$ WEBROOT $}project/images/create/?name={$ dep.asset.name | encodeURIComponent $}&source_type=url&image_url={$ dep.asset.attributes.url | encodeURIComponent $}&disk_format={$ dep.asset.service.disk_format $}&architecture={$ dep.asset.service.architecture $}&minimum_disk={$ dep.asset.service.min_disk $}&minimum_ram={$ dep.asset.service.min_ram $}&description={$ dep.asset.description $}">Install</a>
-  	    <a ng-switch-when="true" class="btn ntn-default btn-sm disbled">Installed</a>
-  	  </td>
+  	  <td>{$ dep.asset.name $}</td>
+
+          <td><div app-action ng-scope ng-init='extraclasses="btn-sm";no_launch=true;asset=dep.asset'></div></td>
   	</tr>
         </table>
       <div ng-switch-when="_undefined_"></div>
