@@ -533,9 +533,13 @@
       assetNameToAsset[asset.name] = asset;
     });
     angular.forEach($scope.assets, function(asset) {
+      asset.disabled = false;
       if ('depends' in asset) {
         angular.forEach(asset.depends, function(dep) {
           dep.asset = assetNameToAsset[dep.name];
+          if('disabled' in asset && dep.asset.disabled) {
+            asset.disabled = true;
+          }
         });
       }
     });
