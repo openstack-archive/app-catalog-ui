@@ -1,0 +1,45 @@
+#!/usr/bin/make -f
+
+PYTHONS:=$(shell pyversions -vr)
+
+UPSTREAM_GIT = git://github.com/openstack/app-catalog-ui.git
+-include /usr/share/openstack-pkg-tools/pkgos.make
+
+%:
+	dh $@ --buildsystem=python_distutils --with python2
+
+override_dh_install:
+	set -e ; for pyvers in $(PYTHONS); do \
+		python$$pyvers setup.py install --install-layout=deb \
+			--root $(CURDIR)/debian/python-app-catalog-ui; \
+	done
+	cp -a $(CURDIR)/debian/python-app-catalog-ui/app_catalog/static \
+		$(CURDIR)/debian/python-app-catalog-ui/var/lib/openstack-dashboard/
+	cp $(CURDIR)/debian/python-app-catalog-ui/app_catalog/enabled/* \
+		$(CURDIR)/debian/python-app-catalog-ui/var/lib/openstack-dashboard/enabled
+	rm -rf $(CURDIR)/debian/python*-app-catalog-ui/usr/lib/python*/dist-packages/*.pth
+
+override_dh_auto_test:
+ifeq (,$(findstring nocheck, $(DEB_BUILD_OPTIONS)))
+	set -e ; for pyvers in $(PYTHONS); do \
+		python$$pyvers setup.py test ; \
+	done
+endif
+
+
+
+override_dh_clean:
+	dh_clean -O--buildsystem=python_distutils
+	rm -rf build
+
+
+# Commands not to run
+override_dh_installcatalogs:
+override_dh_installemacsen override_dh_installifupdown:
+override_dh_installinfo override_dh_installmenu override_dh_installmime:
+override_dh_installmodules override_dh_installlogcheck:
+override_dh_installpam override_dh_installppp override_dh_installudev override_dh_installwm:
+override_dh_installxfonts override_dh_gconf override_dh_icons override_dh_perl override_dh_usrlocal:
+override_dh_installcron override_dh_installdebconf:
+override_dh_installlogrotate override_dh_installgsettings:
+

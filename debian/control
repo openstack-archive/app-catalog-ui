@@ -1,0 +1,21 @@
+Source: python-app-catalog-ui
+Section: python
+Priority: optional
+Maintainer: PKG OpenStack <openstack-devel@lists.alioth.debian.org>
+Uploaders: Thomas Goirand <zigo@debian.org>
+Build-Depends: debhelper (>= 9),
+               dh-python,
+               python-setuptools,
+               python-all,
+Standards-Version: 3.9.6
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=openstack/python-app-catalog-ui.git
+Vcs-Git: git://anonscm.debian.org/openstack/python-app-catalog-ui.git
+Homepage: 
+
+Package: python-app-catalog-ui
+Architecture: all
+Depends: ${python:Depends}, ${misc:Depends}
+Description:  - Python 2.x
+ 'OpenStack Application Catalog for the OpenStack Dashboard',
+ .
+ This package contains the Python 2.x module.

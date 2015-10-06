@@ -1,0 +1,5 @@
+python-app-catalog-ui (1.0.0.0rc1-1) unstable; urgency=medium
+
+  * Initial release (Closes: #1503070)
+
+ -- Christopher Aedo <doc@aedo.net>  Mon, 05 Oct 2015 15:32:37 -0700
