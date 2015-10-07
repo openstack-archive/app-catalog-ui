@@ -5,7 +5,7 @@ APP_CAT_UI_DIR=$(cd $(dirname $BASH_SOURCE)/.. && pwd)
 function install_app-catalog-ui {
     sudo pip install --upgrade ${APP_CAT_UI_DIR}
     cp -a ${APP_CAT_UI_DIR}/app_catalog/static ${DEST}/horizon/
-    cp -a ${APP_CAT_UI_DIR}/enabled/* ${DEST}/horizon/openstack_dashboard/enabled/
+    cp -a ${APP_CAT_UI_DIR}/app_catalog/enabled/* ${DEST}/horizon/openstack_dashboard/enabled/
     python ${DEST}/horizon/manage.py compress --force
 }
 
