@@ -5,9 +5,11 @@ app-catalog-ui
 This makes the Applications and Components stored in the OpenStack Application
 Catalog available to users in their own Cloud's Horizon UI.
 
-![App Catalog Application view screenshot](doc/images/app-catalog-ui-apps-v1.png)
+.. image:: doc/images/app-catalog-ui-apps-v1.png
+   :alt: App Catalog Application view screenshot
 
-![App Catalog Components view screenshot](doc/images/app-catalog-ui-components-v1.png)
+.. image:: doc/images/app-catalog-ui-components-v1.png
+   :alt: App Catalog Components view screenshot
 
 Requirements
 ============
