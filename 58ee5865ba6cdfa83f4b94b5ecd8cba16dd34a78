@@ -1,0 +1,12 @@
+Verified+2: Jenkins
+Code-Review+1: Andreas Jaeger <jaegerandi@gmail.com>
+Code-Review+1: Stan Lagun <slagun@mirantis.com>
+Code-Review+1: Nikolay Starodubtsev <starodubcevna@gmail.com>
+Code-Review+2: Kevin Fox <kevin@efox.cc>
+Workflow+1: Kevin Fox <kevin@efox.cc>
+Code-Review+2: Christopher Aedo <doc@aedo.net>
+Submitted-by: Jenkins
+Submitted-at: Tue, 01 Dec 2015 23:42:39 +0000
+Reviewed-on: https://review.openstack.org/250016
+Project: openstack/app-catalog-ui
+Branch: refs/heads/master
