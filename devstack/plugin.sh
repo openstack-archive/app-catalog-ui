@@ -1,12 +1,11 @@
 # plugin.sh - DevStack plugin.sh dispatch script app-catalog-ui
 
-APP_CAT_UI_DIR=$(cd $(dirname $BASH_SOURCE)/.. && pwd)
-
 function install_app-catalog-ui {
-    sudo pip install --upgrade ${APP_CAT_UI_DIR}
-    cp -a ${APP_CAT_UI_DIR}/app_catalog/static ${DEST}/horizon/
+    setup_develop $APP_CAT_UI_DIR
+}
+
+function configure_app-catalog-ui {
     cp -a ${APP_CAT_UI_DIR}/app_catalog/enabled/* ${DEST}/horizon/openstack_dashboard/enabled/
-    python ${DEST}/horizon/manage.py compress --force
 }
 
 # check for service enabled
@@ -19,13 +18,13 @@ if is_service_enabled app-catalog-ui; then
 
     elif [[ "$1" == "stack" && "$2" == "install" ]]; then
         # Perform installation of service source
-        # no-op
-        :
+        echo_summary "Installing App Catalog UI"
+        install_app-catalog-ui
 
     elif [[ "$1" == "stack" && "$2" == "post-config" ]]; then
         # Configure after the other layer 1 and 2 services have been configured
-        echo_summary "Installing App Catalog UI"
-        install_app-catalog-ui
+        echo_summary "Configuring App Catalog UI"
+        configure_app-catalog-ui
 
     elif [[ "$1" == "stack" && "$2" == "extra" ]]; then
         # Initialize and start the app-catalog-ui service
@@ -42,7 +41,6 @@ if is_service_enabled app-catalog-ui; then
     if [[ "$1" == "clean" ]]; then
         # Remove state and transient data
         # Remember clean.sh first calls unstack.sh
-        # no-op
-        :
+        rm -f ${DEST}/horizon/openstack_dashboard/enabled/*_catalog_panel*.py*
     fi
 fi
