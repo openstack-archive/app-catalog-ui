@@ -1,2 +1,6 @@
 # reno
 releasenotes/build/
+*.pyc
+.tox
+.idea
+*.egg-info
