@@ -22,3 +22,7 @@ releasenotes/build/
 node_modules/
 npm-debug.log
 
+*.pyc
+.tox
+.idea
+*.egg-info
