@@ -24,10 +24,6 @@ ADD_INSTALLED_APPS = ['app_catalog']
 
 ADD_ANGULAR_MODULES = ['horizon.dashboard.project.app_catalog']
 
-ADD_JS_FILES = [
-  'dashboard/project/app_catalog/app_catalog.js'
-]
+ADD_JS_FILES = ['dashboard/project/app_catalog/app_catalog.js']
 
-ADD_SCSS_FILES = [
-  'dashboard/project/app_catalog/app_catalog.scss'
-]
+ADD_SCSS_FILES = ['dashboard/project/app_catalog/app_catalog.scss']
