@@ -1,0 +1,27 @@
+{
+  "version": "0.0.0",
+  "private": true,
+  "name": "app-catalog-ui",
+  "description": "Application Catalog Dashboard",
+  "repository": "none",
+  "license": "Apache 2.0",
+  "devDependencies": {
+    "eslint": "1.2.1",
+    "eslint-config-openstack": "1.2.3",
+    "eslint-plugin-angular": "0.15.0",
+    "jasmine-core": "2.2.0",
+    "karma": "0.12.31",
+    "karma-chrome-launcher": "0.1.8",
+    "karma-cli": "0.0.4",
+    "karma-coverage": "0.3.1",
+    "karma-jasmine": "0.3.5",
+    "karma-ng-html2js-preprocessor": "0.1.2",
+    "karma-phantomjs-launcher": "0.2.0",
+    "karma-threshold-reporter": "0.1.15",
+    "phantomjs": "1.9.17"
+  },
+  "scripts": {
+    "lint": "eslint --no-color app_catalog/static"
+  },
+  "dependencies": {}
+}
