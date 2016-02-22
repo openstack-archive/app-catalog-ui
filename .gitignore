@@ -1,2 +1,24 @@
+# Packages
+*.egg
+*.egg-info
+dist
+build
+.eggs
+eggs
+parts
+bin
+var
+sdist
+develop-eggs
+.idea
+
+# unit tests
+.tox
+
 # reno
 releasenotes/build/
+
+# npm
+node_modules/
+npm-debug.log
+
