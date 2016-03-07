@@ -21,7 +21,7 @@
   angular
     .module('horizon.dashboard.project.app_catalog', [])
     .filter('encodeURIComponent', function() {
-      return window.encodeURIComponent;
+      return $window.encodeURIComponent;
     }).directive('appAction', function () {
       return {
         restrict: 'EA',
@@ -30,23 +30,23 @@
     }).directive('appCatalogMagicSearch', [
       'horizon.framework.widgets.basePath',
       appCatalogMagicSearchBar
-    ]).controller('appCatalogTableCtrl', [
+    ]).controller('AppCatalogTableController', [
       '$scope',
       '$http',
       '$timeout',
       '$modal',
       'horizon.framework.widgets.toast.service',
       'appCatalogModel',
-      appCatalogTableCtrl
-    ]).controller('appComponentCatalogTableCtrl', [
+      AppCatalogTableController
+    ]).controller('AppComponentCatalogTableController', [
       '$scope',
       '$http',
       '$timeout',
       '$modal',
       'horizon.framework.widgets.toast.service',
       'appCatalogModel',
-      appComponentCatalogTableCtrl
-    ]).service('appCatalogModel', [
+      AppComponentCatalogTableController
+    ]).factory('appCatalogModel', [
       '$http',
       '$injector',
       'horizon.app.core.openstack-service-api.heat',
@@ -136,31 +136,34 @@
       ];
       $scope.assets_filtered.length = 0;
       angular.forEach($scope.assets, function(asset) {
-        if ($scope.service_filters_selections[asset.service.type] == true ||
-            asset.service.type == 'bundle') {
+        if ($scope.service_filters_selections[asset.service.type] === true ||
+            asset.service.type === 'bundle') {
           var filteredOut = false;
           angular.forEach(asset.depends, function(dep) {
-            if ($scope.service_filters_selections[dep.asset.service.type] == false) {
+            if ($scope.service_filters_selections[dep.asset.service.type] === false) {
               filteredOut = true;
             }
           });
-          if ($scope.selected_facets.length != 0) {
+          if ($scope.selected_facets.length !== 0) {
             angular.forEach($scope.selected_facets, function(filter) {
-              var val = filter[0].split('.').reduce(function(obj,i) {return obj[i];}, asset);
-              if (val.toLowerCase().indexOf(filter[1].toLowerCase()) == -1) {
+              var val = filter[0].split('.').reduce(function(obj,i) {
+                return obj[i]; }, asset);
+              if (val.toLowerCase().indexOf(filter[1].toLowerCase()) === -1) {
                 filteredOut = true;
               }
             });
           }
-          if ($scope.selected_text != '') {
+          if ($scope.selected_text !== '') {
             var found = false;
             angular.forEach(textSearchableFields, function(field) {
               try {
-                var val = field.reduce(function(obj,i) {return obj[i];}, asset);
-                if (val.toLowerCase().indexOf($scope.selected_text.toLowerCase()) != -1) {
+                var val = field.reduce(function(obj,i) {
+                  return obj[i]; }, asset);
+                if (val.toLowerCase().indexOf($scope.selected_text.toLowerCase()) !== -1) {
                   found = true;
                 }
-              } catch (e) {}
+              } catch (e) {
+              }
             });
             if (!found) {
               filteredOut = true;
@@ -185,7 +188,7 @@
         }
       });
       angular.forEach($scope.asset_filter_facets, function(facet) {
-        if (facet.name == 'service.type') {
+        if (facet.name === 'service.type') {
 //FIXME Doesn't seem to work currently
 //                    facet['options'] = options;
         }
@@ -205,8 +208,8 @@
     this.register_callback = function(type, callback) {
       callbacks[type].push(callback);
     };
-    var semver_compare = function(a, b) {
-      var v = a[0] - b[0]
+    var semverCompare = function(a, b) {
+      var v = a[0] - b[0];
       if (v === 0) {
         v = a[1] - b[1];
         if (v === 0) {
@@ -221,19 +224,19 @@
       }
       var matched = false;
       angular.forEach(asset.service.ever, function(ever) {
-        var has_min = 'min' in ever;
-        var has_max = 'max' in ever;
-        if(has_max && has_min) {
-          if (semver_compare(ever.min, version) <= 0 &&
-              semver_compare(version, ever.max) <= 0) {
+        var hasMin = 'min' in ever;
+        var hasMax = 'max' in ever;
+        if (hasMax && hasMin) {
+          if (semverCompare(ever.min, version) <= 0 &&
+              semverCompare(version, ever.max) <= 0) {
             matched = true;
           }
-        } else if (has_max) {
-          if (semver_compare(version, ever.max) <= 0) {
+        } else if (hasMax) {
+          if (semverCompare(version, ever.max) <= 0) {
             matched = true;
           }
-        } else if (has_min) {
-          if (semver_compare(ever.min, version) <= 0) {
+        } else if (hasMin) {
+          if (semverCompare(ever.min, version) <= 0) {
             matched = true;
           }
         }
@@ -251,14 +254,14 @@
       var appCatalogUrl = appCatalogSettings.APP_CATALOG_URL;
       $scope.heat_release = appCatalogSettings.HEAT_VERSION.REL;
       $scope.heat_version = appCatalogSettings.HEAT_VERSION.VER;
-      if($scope.heat_version) {
+      if ($scope.heat_version) {
         $scope.heat_version = $scope.heat_version.split('.', 3).map(Number);
       } else {
         $scope.heat_version = defaultVersion;
       }
       $scope.murano_release = appCatalogSettings.MURANO_VERSION.REL;
       $scope.murano_version = appCatalogSettings.MURANO_VERSION.VER;
-      if($scope.murano_version) {
+      if ($scope.murano_version) {
         $scope.murano_version = $scope.murano_version.split('.', 3).map(Number);
       } else {
         $scope.murano_version = defaultVersion;
@@ -285,7 +288,7 @@
         var process = function(asset) {
           var url = asset.attributes.url;
           var args = {'template_url': url};
-          if ($scope.eversion_check(asset, $scope.heat_version) != true) {
+          if ($scope.eversion_check(asset, $scope.heat_version) !== true) {
             asset.disabled = true;
             notifyUpdate();
             return;
@@ -300,7 +303,7 @@
             var str = 'ERROR: Could not retrieve template:';
             asset.disabled = true;
             asset.validated = 'unsupported';
-            if (status == 400 && data.slice(0, str.length) == str) {
+            if (status === 400 && data.slice(0, str.length) === str) {
               asset.validated = 'error';
             }
             notifyUpdate();
@@ -310,15 +313,15 @@
           $scope.assets.push(asset);
           if ('version' in asset.service && asset.service.version > 1) {
             asset.disabled = true;
-          } else if (asset.service.type == 'heat') {
+          } else if (asset.service.type === 'heat') {
             process(asset);
-          } else if (asset.service.type == 'murano') {
+          } else if (asset.service.type === 'murano') {
             asset.validated = true;
             asset.disabled = !$scope.has_murano;
-            if ($scope.eversion_check(asset, $scope.murano_version) != true) {
+            if ($scope.eversion_check(asset, $scope.murano_version) !== true) {
               asset.disabled = true;
             }
-          } else if (asset.service.type != 'glance' && asset.service.type != 'bundle') {
+          } else if (asset.service.type !== 'glance' && asset.service.type !== 'bundle') {
             asset.disabled = true;
           }
           asset.has_murano = $scope.has_murano;
@@ -354,7 +357,7 @@
     };
     this.update_selected_facets = function(selectedFacets) {
       $scope.selected_facets.length = 0;
-      if (selectedFacets != undefined) {
+      if (selectedFacets !== undefined) {
         angular.forEach(selectedFacets, function(facet) {
           $scope.selected_facets.push(facet);
         });
@@ -430,7 +433,7 @@
     });
     var textSearchWatcher2 = $scope.$on('searchUpdated', function(event, query) {
       var selectedFacets;
-      if (query != '') {
+      if (query !== '') {
         selectedFacets = query.split('&');
         for (var i = 0; i < selectedFacets.length; i++) {
           var s = selectedFacets[i];
@@ -459,7 +462,7 @@
     return directive;
   }
 
-  function appCatalogTableCtrl($scope, $http, $timeout, $modal, toast, appCatalogModel) {
+  function AppCatalogTableController($scope, $http, $timeout, $modal, toast, appCatalogModel) {
     $scope.assets = [];
     var update = function() {
       $scope.assets = [];
@@ -488,7 +491,7 @@
     };
   }
 
-  function appComponentCatalogTableCtrl($scope, $http, $timeout, $modal, toast, appCatalogModel) {
+  function AppComponentCatalogTableController($scope, $http, $timeout, $modal, toast, appCatalogModel) {
     $scope.assets = appCatalogModel.assets_filtered;
     var update = function() {
       $timeout(function() {
@@ -504,7 +507,7 @@
     var i;
     if ('glance_loaded' in $scope && 'glance_names' in $scope) {
       for (i in $scope.assets) {
-        if ($scope.assets[i].service.type != 'glance') {
+        if ($scope.assets[i].service.type !== 'glance') {
           continue;
         }
         var name = $scope.assets[i].name;
@@ -517,11 +520,11 @@
     }
     if ('murano_loaded' in $scope && 'murano_package_definitions' in $scope) {
       for (i in $scope.assets) {
-        if ($scope.assets[i].service.type != 'murano') {
+        if ($scope.assets[i].service.type !== 'murano') {
           continue;
         }
         var definition = $scope.assets[i].service.package_name;
-        var isInstalled = definition in ($scope.murano_package_definitions);
+        var isInstalled = definition in $scope.murano_package_definitions;
         $scope.assets[i].installed = isInstalled;
         if (isInstalled) {
           $scope.assets[i].service.murano_id = $scope.murano_package_definitions[definition].id;
@@ -537,7 +540,7 @@
       if ('depends' in asset) {
         angular.forEach(asset.depends, function(dep) {
           dep.asset = assetNameToAsset[dep.name];
-          if('disabled' in asset && dep.asset.disabled) {
+          if ('disabled' in asset && dep.asset.disabled) {
             asset.disabled = true;
           }
         });
@@ -562,22 +565,32 @@
   }
 
 /*FIXME move out to testing file.*/
-  function test_evars($scope) {
+  function testEvars($scope) {
     var assert = function(t, a, b) {
       if (!t) {
         console.log("Failed", a, b);
       }
-    }
-    assert($scope.eversion_check({service:{}}, [2014,1,1]), [], [2014,1,1]);
-    assert($scope.eversion_check({service:{ever:[{min:[2014,1,1]}]}}, [2014,1,1]), [2014,1,1], [2014,1,1]);
-    assert($scope.eversion_check({service:{ever:[{max:[2014,1,1]}]}}, [2014,1,1]), [2014,1,1], [2014,1,1]);
-    assert(!$scope.eversion_check({service:{ever:[{max:[2014,1,1]}]}}, [2015,1,1]), [2014,1,1], [2015,1,1]);
-    assert($scope.eversion_check({service:{ever:[{max:[2014,1,1]}]}}, [2013,1,1]), [2014,1,1], [2013,1,1]);
-    assert(!$scope.eversion_check({service:{ever:[{min:[2016,1,1]}]}}, [2015,1,1]), [2016,1,1], [2015,1,1]);
-    assert($scope.eversion_check({service:{ever:[{min:[2013,1,1]}]}}, [2014,1,1]), [2013,1,1], [2014,1,1]);
-    assert($scope.eversion_check({service:{ever:[{min:[2013,1,1],max:[2015,1,1]}]}}, [2014,1,1]), [2013,2015], [2014,1,1]);
-    assert(!$scope.eversion_check({service:{ever:[{min:[2013,1,1],max:[2015,1,1]}]}}, [2011,1,1]), [2013,2015], [2011,1,1]);
-    assert(!$scope.eversion_check({service:{ever:[{min:[2013,1,1],max:[2015,1,1]}]}}, [2016,1,1]), [2013,2015], [2016,1,1]);
+    };
+    assert($scope.eversion_check({service:{}},
+        [2014,1,1]), [], [2014,1,1]);
+    assert($scope.eversion_check({service:{ever:[{min:[2014,1,1]}]}},
+        [2014,1,1]), [2014,1,1], [2014,1,1]);
+    assert($scope.eversion_check({service:{ever:[{max:[2014,1,1]}]}},
+        [2014,1,1]), [2014,1,1], [2014,1,1]);
+    assert(!$scope.eversion_check({service:{ever:[{max:[2014,1,1]}]}},
+        [2015,1,1]), [2014,1,1], [2015,1,1]);
+    assert($scope.eversion_check({service:{ever:[{max:[2014,1,1]}]}},
+        [2013,1,1]), [2014,1,1], [2013,1,1]);
+    assert(!$scope.eversion_check({service:{ever:[{min:[2016,1,1]}]}},
+        [2015,1,1]), [2016,1,1], [2015,1,1]);
+    assert($scope.eversion_check({service:{ever:[{min:[2013,1,1]}]}},
+        [2014,1,1]), [2013,1,1], [2014,1,1]);
+    assert($scope.eversion_check({service:{ever:[{min:[2013,1,1],max:[2015,1,1]}]}},
+        [2014,1,1]), [2013,2015], [2014,1,1]);
+    assert(!$scope.eversion_check({service:{ever:[{min:[2013,1,1],max:[2015,1,1]}]}},
+        [2011,1,1]), [2013,2015], [2011,1,1]);
+    assert(!$scope.eversion_check({service:{ever:[{min:[2013,1,1],max:[2015,1,1]}]}},
+        [2016,1,1]), [2013,2015], [2016,1,1]);
   }
 
 })();
