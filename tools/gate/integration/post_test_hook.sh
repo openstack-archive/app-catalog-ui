@@ -3,7 +3,9 @@
 # This script will be executed inside post_test_hook function in devstack gate
 
 set -x
-source commons $@
+
+DIR=${BASH_SOURCE%/*}
+source $DIR/commons $@
 
 set +e
 cd /opt/stack/new/app-catalog-ui
