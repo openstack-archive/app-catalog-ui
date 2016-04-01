@@ -41,6 +41,7 @@ With Horizon
   pushd ../apps-catalog-ui
   ../horizon/tools/with_venv.sh pip install --upgrade .
   cp -a app_catalog/enabled/* ../horizon/openstack_dashboard/enabled/
+  cp -a app_catalog/local_settings.d/* ../horizon/openstack_dashboard/local/local_settings.d
   popd
 
   #FOR Murano Dashboard support:

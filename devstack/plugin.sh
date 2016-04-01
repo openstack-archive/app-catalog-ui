@@ -6,6 +6,7 @@ function install_app-catalog-ui {
 
 function configure_app-catalog-ui {
     cp -a ${APP_CAT_UI_DIR}/app_catalog/enabled/* ${DEST}/horizon/openstack_dashboard/enabled/
+    cp -a ${APP_CAT_UI_DIR}/app_catalog/local/local_settings.d/* ${DEST}/horizon/openstack_dashboard/local/local_settings.d/
 }
 
 # check for service enabled
@@ -42,5 +43,6 @@ if is_service_enabled app-catalog-ui; then
         # Remove state and transient data
         # Remember clean.sh first calls unstack.sh
         rm -f ${DEST}/horizon/openstack_dashboard/enabled/*_catalog_panel*.py*
+        rm -f ${DEST}/horizon/openstack_dashboard/local/local_settings.d/*app_catalog_common*.py*
     fi
 fi
