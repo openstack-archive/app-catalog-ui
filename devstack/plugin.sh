@@ -1,7 +1,11 @@
 # plugin.sh - DevStack plugin.sh dispatch script app-catalog-ui
 
 function install_app-catalog-ui {
+    mv $APP_CAT_UI_DIR/test-requirements.txt $APP_CAT_UI_DIR/_test-requirements.txt
+
     setup_develop $APP_CAT_UI_DIR
+
+    mv $APP_CAT_UI_DIR/_test-requirements.txt $APP_CAT_UI_DIR/test-requirements.txt
 }
 
 function configure_app-catalog-ui {
