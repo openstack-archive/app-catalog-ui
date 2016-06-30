@@ -27,10 +27,10 @@
       <a ng-switch-when="false" ng-class="extraclasses" class="btn btn-default disabled ajax-modal" href="/">Unsupported</a>
       <div ng-switch-when="true" ng-switch="asset.installed">
         <a ng-switch-default ng-class="extraclasses" class="btn btn-default disabled ajax-modal" href="/">Checking</a>
-        <a ng-switch-when="false" ng-class="[extraclasses, installclasses]" class="btn btn-default ajax-modal" href="{$ WEBROOT $}murano/packages/upload?repo_name={$ asset.service.package_name | encodeURIComponent $}&import_type=by_name">Install</a>
+        <a ng-switch-when="false" ng-class="[extraclasses, installclasses]" class="btn btn-default ajax-modal" href="{$ WEBROOT $}app-catalog/packages/upload?repo_name={$ asset.service.package_name | encodeURIComponent $}&import_type=by_name">Install</a>
         <div ng-switch-when="true" ng-switch="no_launch || '_undefined_'">
           <a ng-switch-when="true" ng-class="extraclasses" class="btn btn-default disabled ajax-modal" href="/">Installed</a>
-          <a ng-switch-default ng-class="[extraclasses, launchclasses]" class="btn btn-default ajax-modal" href="{$ WEBROOT $}murano/catalog/quick-add/{$ asset.service.murano_id $}">Launch</a>
+          <a ng-switch-default ng-class="[extraclasses, launchclasses]" class="btn btn-default ajax-modal" href="{$ WEBROOT $}app-catalog/catalog/quick-add/{$ asset.service.murano_id $}">Launch</a>
         </div>
       </div>
     </div>
