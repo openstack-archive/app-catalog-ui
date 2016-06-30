@@ -1,4 +1,5 @@
-from app_catalog.views import IndexView as ACView
+from app_catalog.app_catalog.views import IndexView as ACView
+
 
 
 class IndexView(ACView):
