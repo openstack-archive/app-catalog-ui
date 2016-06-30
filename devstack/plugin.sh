@@ -45,6 +45,10 @@ if is_service_enabled app-catalog-ui; then
     if [[ "$1" == "clean" ]]; then
         # Remove state and transient data
         # Remember clean.sh first calls unstack.sh
-        rm -f ${DEST}/horizon/openstack_dashboard/enabled/*_catalog_panel*.py*
+        rm -f ${DEST}/horizon/openstack_dashboard/enabled/_50_dashboard_catalog.*
+        rm -f ${DEST}/horizon/openstack_dashboard/enabled/_51_app_catalog.*
+        rm -f ${DEST}/horizon/openstack_dashboard/enabled/_60_panel_group_browse.*
+        rm -f ${DEST}/horizon/openstack_dashboard/enabled/_61_app_catalog_panel.*
+        rm -f ${DEST}/horizon/openstack_dashboard/enabled/_62_project_component_catalog_panel.*
     fi
 fi
