@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Component Catalog" %}{% endblock %}
+
+{% block page_header %}
+  {% include "horizon/common/_page_header.html" with title=_("Component Catalog ") %}
+{% endblock page_header %}
+
+{% block main %}
+
+<div ng-cloak
+  ng-controller="appComponentCatalogTableCtrl" ng-init="init({{ APP_CATALOG_SETTINGS }})">
+  <ng-include src="'{{ STATIC_URL }}dashboard/project/app_catalog/main_panel.html'"></ng-include>
+</div>
+{% endblock %}
+

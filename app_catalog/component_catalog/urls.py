@@ -14,9 +14,9 @@
 
 from django.conf import urls
 
-from component_catalog import views
+from app_catalog.component_catalog import views
 
-urlpatterns = urls.patterns(
-    '',
+
+urlpatterns = [
     urls.url(r'^$', views.IndexView.as_view(), name='index'),
-)
+]
