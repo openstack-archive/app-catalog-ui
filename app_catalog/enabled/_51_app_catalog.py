@@ -10,14 +10,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# The name of the panel to be added to HORIZON_CONFIG. Required.
-PANEL = 'component_catalog_panel'
-# The name of the dashboard the PANEL associated with. Required.
-PANEL_DASHBOARD = 'project'
-# The name of the panel group the PANEL is associated with.
-PANEL_GROUP = 'catalog_panel_group'
+ADD_INSTALLED_APPS = [
+    'app_catalog',
+]
 
-# Python panel class of the PANEL to be added.
-ADD_PANEL = 'component_catalog.panel.ComponentCatalog'
+ADD_ANGULAR_MODULES = ['horizon.dashboard.project.app_catalog']
 
-ADD_INSTALLED_APPS = ['component_catalog']
+ADD_JS_FILES = ['dashboard/project/app_catalog/app_catalog.js']
+
+ADD_SCSS_FILES = ['dashboard/project/app_catalog/app_catalog.scss']
+
+FEATURE = True
