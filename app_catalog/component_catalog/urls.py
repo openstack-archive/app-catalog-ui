@@ -1,3 +1,5 @@
+# Copyright 2015 IBM Corp.
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -10,9 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# The name of the panel group to be added to HORIZON_CONFIG. Required.
-PANEL_GROUP = 'catalog_panel_group'
-# The display name of the PANEL_GROUP. Required.
-PANEL_GROUP_NAME = 'Catalog'
-# The name of the dashboard the PANEL_GROUP associated with. Required.
-PANEL_GROUP_DASHBOARD = 'project'
+from django.conf import urls
+
+from app_catalog.component_catalog import views
+
+
+urlpatterns = [
+    urls.url(r'^$', views.IndexView.as_view(), name='index'),
+]
