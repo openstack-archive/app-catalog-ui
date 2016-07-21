@@ -8,7 +8,6 @@ hacking<0.11,>=0.10.0
 http://tarballs.openstack.org/horizon/horizon-master.tar.gz#egg=horizon
 coverage>=3.6
 ddt>=1.0.1 # MIT
-discover
 django-nose>=1.2
 python-subunit>=0.0.18
 nose-exclude # LGPL
