@@ -1,0 +1,11 @@
+Code-Review+2: Christopher Aedo <doc@aedo.net>
+Code-Review+1: Serg Melikyan <smelikyan@mirantis.com>
+Code-Review+1: Alexander Tivelkov <ativelkov@mirantis.com>
+Code-Review+2: Kirill Zaitsev <k.zaitsev@me.com>
+Workflow+1: Kirill Zaitsev <k.zaitsev@me.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Fri, 14 Oct 2016 10:49:14 +0000
+Reviewed-on: https://review.openstack.org/335725
+Project: openstack/app-catalog-ui
+Branch: refs/heads/master
