@@ -11,13 +11,6 @@ Catalog available to users in their own Cloud's Horizon UI.
 .. image:: doc/images/app-catalog-ui-components-v1.png
    :alt: App Catalog Components view screenshot
 
-Team and repository tags
-------------------------
-
-.. image:: http://governance.openstack.org/badges/app-catalog-ui.svg
-   :alt: Project, Official
-    :target: http://governance.openstack.org/reference/tags/index.html
-
 Requirements
 ============
 
