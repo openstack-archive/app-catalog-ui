@@ -1,3 +1,0 @@
-# settings file for app-catalog-ui plugin
-APP_CAT_UI_DIR=$DEST/app-catalog-ui
-enable_service app-catalog-ui
