@@ -1,5 +1,0 @@
-#!/bin/bash
-
-set -ex
-
-export APP_CATALOG_SCREENSHOTS_DIR=/opt/stack/new/app-catalog-ui/.tox/py27integration/src/horizon/openstack_dashboard/test/integration_tests/integration_tests_screenshots

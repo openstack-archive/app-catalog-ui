@@ -1,6 +1,0 @@
-include setup.py
-
-recursive-include app_catalog/enabled *
-recursive-include app_catalog/static *
-recursive-include app_catalog/templates *
-recursive-include component_catalog/templates *
